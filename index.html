@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Class Booking System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        /* --- Keep all your existing CSS styles here --- */
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --dark: #34495e;
+            --light: #ecf0f1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin-bottom: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab {
+            padding: 15px 0;
+            flex: 1;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .tab:hover:not(.active) {
+            background-color: var(--light);
+        }
+
+        .tab-content {
+            display: none;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s;
+            min-height: 300px; /* Ensure content area has some height */
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- New Timetable Grid Styles --- */
+        .timetable-container {
+            margin-top: 20px;
+            position: relative; /* Needed for spinner positioning */
+            min-height: 400px; /* Ensure container has height while loading */
+        }
+
+        .timetable-grid {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden; /* Ensures rounded corners are applied */
+        }
+
+        .timetable-header {
+            display: flex;
+            background-color: var(--dark);
+            color: white;
+        }
+
+        .day-header {
+            flex: 1; /* Equal width columns */
+            padding: 12px 10px;
+            text-align: center;
+            font-weight: 600;
+            border-right: 1px solid #556a7e; /* Separator lines */
+        }
+        .day-header:last-child {
+            border-right: none;
+        }
+         /* Corner cell */
+        .day-header.corner {
+            flex: 0 0 120px; /* Fixed width for the first 'corner' cell */
+            background-color: var(--dark);
+             visibility: hidden; /* Keep space but hide content */
+        }
+
+
+        .timetable-body-grid {
+            display: flex;
+        }
+
+        .day-column {
+            flex: 1; /* Equal width columns */
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #ddd;
+        }
+        .day-column:last-child {
+            border-right: none;
+        }
+         /* First 'column' for Period Labels */
+        .day-column.period-labels {
+            flex: 0 0 120px; /* Fixed width matching corner header */
+            background-color: #f9f9f9; /* Light background for distinction */
+        }
+
+        .period-slot, .period-label {
+            padding: 10px;
+            min-height: 80px; /* Ensure consistent height */
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            text-align: center;
+        }
+        .period-label {
+            font-weight: 600;
+        }
+         /* Remove bottom border from last slot in each column */
+        .day-column .period-slot:last-child,
+        .day-column.period-labels .period-label:last-child {
+            border-bottom: none;
+        }
+
+        .period-slot.available {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .period-slot.available:hover {
+            background-color: rgba(46, 204, 113, 0.15);
+        }
+
+        .period-slot.booked {
+            background-color: rgba(231, 76, 60, 0.1);
+            cursor: not-allowed;
+        }
+
+        .booked-info {
+            font-size: 12px;
+            line-height: 1.4;
+            font-weight: normal; /* Override potential inherited bold */
+        }
+         .booked-info strong {
+             font-weight: 600; /* Make staff name bold again */
+             display: block; /* Put name on its own line */
+             margin-bottom: 2px;
+         }
+        /* --- End Timetable Grid Styles --- */
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .booking-form {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 400px;
+            max-width: 90%;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #2980b9;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background-color: #c0392b;
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .history-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary);
+        }
+
+        .history-card h3 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .history-details {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .history-details p {
+            margin-bottom: 5px;
+            flex: 1 0 50%; /* Allow wrapping on smaller screens */
+        }
+
+        .spinner {
+            /* General spinner for full page overlay */
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2000;
+        }
+        .spinner.inline {
+             /* Spinner for specific containers like timetable */
+            position: absolute; /* Position relative to parent */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5; /* Above content but below overlay */
+        }
+
+
+        .spinner:after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 6px solid var(--primary);
+            border-color: var(--primary) transparent var(--primary) transparent;
+            animation: spin 1.2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 4px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1500;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .notification.success {
+            background-color: var(--secondary);
+        }
+
+        .notification.error {
+            background-color: var(--danger);
+        }
+         .notification.warning { /* Added warning style */
+            background-color: var(--warning);
+            color: #333; /* Darker text for yellow */
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .day-header, .period-slot, .period-label {
+                padding: 8px 5px;
+                font-size: 12px; /* Smaller font on mobile */
+                min-height: 65px;
+            }
+            .day-header.corner, .day-column.period-labels {
+                flex: 0 0 80px; /* Smaller fixed width on mobile */
+            }
+            .booked-info {
+                font-size: 10px;
+            }
+            .history-details p {
+                 flex: 1 0 100%; /* Stack history details vertically */
+            }
+             .timetable-container { min-height: 300px; }
+        }
+         @media (max-width: 480px) {
+             .day-header, .period-slot, .period-label {
+                 font-size: 10px;
+                 min-height: 55px;
+             }
+             .day-header.corner, .day-column.period-labels {
+                 flex: 0 0 60px; /* Even smaller fixed width */
+             }
+             .booking-form {
+                 width: 95%;
+             }
+             header h1 { font-size: 1.5em; }
+             .timetable-container { min-height: 250px; }
+
+         }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Smart Class Booking</h1>
+            <!-- <p>Book classes easily across the week</p> -->
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="booking">Booking</div>
+            <div class="tab" data-tab="history">Booking History</div>
+        </div>
+
+        <div id="booking" class="tab-content active">
+            <h2>Class Booking</h2>
+            <p class="week-info">Week: <span id="current-week">Loading...</span></p>
+            <div class="timetable-container" id="timetable-grid-container">
+                <!-- Spinner specifically for the timetable loading -->
+                 <div class="spinner inline" id="timetable-spinner"></div>
+                 <!-- Grid will be populated dynamically by JS -->
+            </div>
+        </div>
+
+        <div id="history" class="tab-content">
+            <h2>Booking History (Last 7 Days)</h2>
+            <div id="history-container">
+                 <div class="spinner inline" id="history-spinner" style="display:none;"></div>
+                <!-- Will be populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <div class="booking-form" id="booking-form">
+        <h2>Book a Class</h2>
+        <form id="class-booking-form">
+             <p style="text-align: center; margin-bottom: 15px; font-weight: bold;" id="booking-form-info"></p>
+            <div class="form-group">
+                <label for="staff-name">Staff Name</label>
+                <input type="text" id="staff-name" required>
+            </div>
+            <div class="form-group">
+                <label for="department">Department</label>
+                <select id="department" required>
+                    <option value="">Select Department</option>
+                    <option value="CSE">CSE</option>
+                    <option value="EEE">EEE</option>
+                    <option value="AIDS">AIDS</option>
+                    <option value="ECE">ECE</option>
+                    <option value="MECH">MECH</option>
+                    <option value="IT">IT</option>
+                    <option value="CIVIL">CIVIL</option>
+                    
+                </select>
+            </div>
+            <input type="hidden" id="selected-day">
+            <input type="hidden" id="selected-period">
+            <div class="form-buttons">
+                <button type="button" class="btn btn-danger" id="cancel-booking">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="submit-booking">Book Class</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- General loading spinner (full page) -->
+    <div class="spinner" id="spinner"></div>
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // ******** IMPORTANT: PASTE YOUR DEPLOYED WEB APP URL HERE ********
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxS4WVdR-ediExBCb1_xG8E3RDavuvzHWS_RnuoQyC_FRbRz3mm7he_nMDoaIpymkBU/exec';
+        // ******** e.g., 'https://script.google.com/macros/s/xxxxx/exec' ********
+
+        // Variables for tracking state
+        let currentWeek;
+        let allBookingData = []; // Holds ALL data fetched from sheet
+        let selectedDay = '';
+        let selectedPeriod = '';
+        const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+        const totalPeriods = 8;
+
+        // Initialize the application
+        $(document).ready(function() {
+             if (!SCRIPT_URL || SCRIPT_URL === 'YOUR_DEPLOYED_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
+                showNotification('Error: Google Apps Script URL not set in the script.', 'error');
+                $('#timetable-spinner').hide();
+                console.error("SCRIPT_URL is not set!");
+                alert("Configuration Error: Please set the SCRIPT_URL in the HTML file.");
+                return; // Stop initialization
+            }
+
+            setupTabNavigation();
+            setupCurrentWeek();
+            loadBookingData(); // Load data from Google Sheet
+
+            // Event handlers
+            $('#cancel-booking').on('click', closeBookingForm);
+            $('#overlay').on('click', closeBookingForm);
+            $('#class-booking-form').on('submit', handleBookingSubmit);
+
+            $('#timetable-grid-container').on('click', '.period-slot.available', function() {
+                const day = $(this).data('day');
+                const period = $(this).data('period');
+                openBookingForm(day, period);
+            });
+        });
+
+        // Setup tab navigation
+        function setupTabNavigation() {
+            $('.tab').on('click', function() {
+                const tabId = $(this).data('tab');
+                $('.tab').removeClass('active');
+                $(this).addClass('active');
+                $('.tab-content').removeClass('active');
+                $(`#${tabId}`).addClass('active');
+
+                if (tabId === 'history') {
+                    renderBookingHistory(); // Render history from existing data
+                }
+                 // Re-render timetable if booking tab becomes active again (optional, ensures latest)
+                 // else if (tabId === 'booking') {
+                 //    renderTimetable();
+                 // }
+            });
+        }
+
+        // --- Date and Week Functions (Keep existing ones) ---
+         function setupCurrentWeek() {
+            const now = new Date();
+            const startOfYear = new Date(now.getFullYear(), 0, 1);
+            const pastDays = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
+            const dayOfWeek = startOfYear.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+            currentWeek = Math.ceil((pastDays + dayOfWeek + 1) / 7);
+
+             // Adjust week number if it's Sat/Sun to show the *upcoming* Mon-Fri week
+            const todayDay = now.getDay(); // 0 = Sunday, 6 = Saturday
+             // No adjustment needed based on testing, week calc seems correct for ISO week start? Let's re-evaluate if needed.
+             // Simple logic: Show the week number containing the *upcoming* Monday if it's Sat/Sun?
+             // Let's stick to standard week calc for now.
+
+            const monday = getMonday(now);
+            const friday = getFriday(new Date(monday)); // Pass a copy
+
+             $('#current-week').text(`Week ${currentWeek} (${formatDate(monday)} - ${formatDate(friday)})`);
+        }
+
+        function getMonday(d) {
+            d = new Date(d);
+            var day = d.getDay(),
+                diff = d.getDate() - day + (day == 0 ? -6 : 1); // Adjust when day is Sunday
+            return new Date(d.setDate(diff));
+        }
+
+        function getFriday(d) {
+             d = new Date(d); // Use the monday passed in
+            var diff = d.getDate() + 4; // Monday + 4 days = Friday
+            return new Date(d.setDate(diff));
+        }
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        // --- End Date Functions ---
+
+
+        // Load ALL booking data from Google Sheets via Apps Script
+        async function loadBookingData() {
+            console.log("Loading booking data from Google Sheet...");
+            showSpinner('timetable'); // Show spinner in timetable area
+            showSpinner(); // Show general overlay spinner
+
+            try {
+                const response = await fetch(SCRIPT_URL);
+
+                if (!response.ok) {
+                     // Try to get error message from response body if possible
+                     let errorMsg = `HTTP error! status: ${response.status}`;
+                     try {
+                         const errorData = await response.json();
+                         if (errorData && errorData.message) {
+                             errorMsg += ` - ${errorData.message}`;
+                         }
+                     } catch (e) { /* Ignore if response body isn't valid JSON */ }
+                    throw new Error(errorMsg);
+                }
+
+                const data = await response.json();
+
+                if (data && data.status === 'error') {
+                     throw new Error(`Error from script: ${data.message}`);
+                }
+
+                // Process data - Ensure correct types (especially numbers)
+                allBookingData = data.map(item => ({
+                    ...item,
+                    // Header names from GAS should match keys here
+                    Week: parseInt(item.Week, 10),
+                    Period: parseInt(item.Period, 10),
+                    // Timestamp should already be ISO string from GAS
+                    Timestamp: item.Timestamp || null
+                }));
+
+                console.log("Booking data loaded:", allBookingData);
+                renderTimetable(); // Render timetable with current week's data
+                // If history tab is already active, render it too
+                if ($('#history').hasClass('active')) {
+                    renderBookingHistory();
+                }
+
+            } catch (error) {
+                console.error('Error loading booking data:', error);
+                showNotification(`Error loading data: ${error.message}. Please try again later.`, 'error');
+                // Optionally clear the timetable or show an error message within it
+                 $('#timetable-grid-container').html('<p style="color: red; text-align: center; padding: 20px;">Failed to load booking data.</p>');
+                 allBookingData = []; // Reset data on error
+            } finally {
+                hideSpinner('timetable');
+                hideSpinner(); // Hide general overlay spinner
+            }
+        }
+
+
+        // Render the timetable grid using the 'allBookingData'
+        function renderTimetable() {
+             console.log("Rendering timetable for week:", currentWeek);
+            const container = $('#timetable-grid-container');
+            container.empty(); // Clear previous grid or spinner/error message
+
+            const grid = $('<div>').addClass('timetable-grid');
+            const header = $('<div>').addClass('timetable-header');
+            const body = $('<div>').addClass('timetable-body-grid');
+
+            header.append($('<div>').addClass('day-header corner').html(' '));
+            daysOfWeek.forEach(day => {
+                header.append($('<div>').addClass('day-header').text(day));
+            });
+
+            const periodLabelColumn = $('<div>').addClass('day-column period-labels');
+            for (let period = 1; period <= totalPeriods; period++) {
+                periodLabelColumn.append($('<div>').addClass('period-label').text(`Period ${period}`));
+            }
+            body.append(periodLabelColumn);
+
+            daysOfWeek.forEach(day => {
+                const dayColumn = $('<div>').addClass('day-column');
+                for (let period = 1; period <= totalPeriods; period++) {
+                    const slot = $('<div>').addClass('period-slot');
+                    slot.attr('data-day', day);
+                    slot.attr('data-period', period);
+
+                    // Find booking in the *entire* dataset for THIS week and slot
+                    const booking = allBookingData.find(b =>
+                        b.Week === currentWeek &&
+                        b.Day === day &&
+                        b.Period === period
+                    );
+
+                    if (booking) {
+                        slot.addClass('booked');
+                        slot.html(`
+                            <div class="booked-info">
+                                <strong>${booking.StaffName || 'N/A'}</strong>
+                                ${booking.Department || 'N/A'}
+                            </div>
+                        `);
+                    } else {
+                        slot.addClass('available');
+                        slot.html(`Available`);
+                    }
+                    dayColumn.append(slot);
+                }
+                body.append(dayColumn);
+            });
+
+            grid.append(header);
+            grid.append(body);
+            container.append(grid);
+        }
+
+
+        // Open booking form
+        function openBookingForm(day, period) {
+             // Re-check if already booked using the latest data, just in case
+             const booking = allBookingData.find(b => b.Week === currentWeek && b.Day === day && b.Period == period); // Use == for period comparison just in case of type mismatch initially
+             if (booking) {
+                 showNotification('This slot appears to be booked. Refreshing data might be needed.', 'warning');
+                 // Optionally force a refresh: loadBookingData();
+                 return;
+             }
+
+            console.log(`Opening booking form for ${day}, period ${period}`);
+            selectedDay = day;
+            selectedPeriod = parseInt(period);
+
+            $('#selected-day').val(day);
+            $('#selected-period').val(period);
+            $('#booking-form-info').text(`${day} - Period ${period}`);
+
+            $('#staff-name').val('');
+            $('#department').val('');
+            $('#submit-booking').prop('disabled', false); // Ensure button is enabled
+
+            $('#booking-form').fadeIn(200);
+            $('#overlay').fadeIn(200);
+        }
+
+        // Close booking form
+        function closeBookingForm() {
+            $('#booking-form').fadeOut(200);
+            $('#overlay').fadeOut(200);
+            $('#class-booking-form')[0].reset();
+            $('#submit-booking').prop('disabled', false); // Re-enable button on close
+        }
+
+        // Handle booking form submission - POST to Google Apps Script
+        async function handleBookingSubmit(e) {
+            e.preventDefault();
+            console.log("Attempting to submit booking...");
+            showSpinner(); // Show general spinner
+             $('#submit-booking').prop('disabled', true); // Disable button to prevent double submission
+
+            const staffName = $('#staff-name').val().trim();
+            const department = $('#department').val();
+
+            if (!staffName || !department) {
+                showNotification('Please fill in all fields', 'error');
+                hideSpinner();
+                 $('#submit-booking').prop('disabled', false); // Re-enable button
+                return;
+            }
+
+            // Prepare data payload for GAS
+            const bookingPayload = {
+                week: currentWeek,
+                day: selectedDay,
+                period: selectedPeriod,
+                staffName: staffName,
+                department: department
+            };
+
+             console.log("Sending payload:", bookingPayload);
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    // GAS doPost often expects data differently depending on setup.
+                    // Sending as JSON string in body is common.
+                    // Using redirect:'follow' is generally safe.
+                    // Omitting 'Content-Type' often works, but 'text/plain' is sometimes needed.
+                    // Let's try minimal headers first. If issues, add 'Content-Type': 'text/plain'.
+                     // mode: 'no-cors', // Use 'no-cors' IF you have issues and deployed as 'Anyone, anonymous'
+                    // headers: { // Optional: Explicitly set content type if needed
+                    //     'Content-Type': 'application/json', // OR 'text/plain'
+                    // },
+                     redirect: 'follow', // Necessary for GAS web apps
+                    body: JSON.stringify(bookingPayload)
+                });
+
+                 // Since redirect:'follow' is used, we expect the final response
+                 if (!response.ok) {
+                     // Attempt to parse error from response body
+                     let errorMsg = `Booking failed. Status: ${response.status}`;
+                     try {
+                         const errorData = await response.json();
+                         if(errorData && errorData.message) {
+                             errorMsg = `Booking failed: ${errorData.message}`;
+                         }
+                     } catch(parseError) { /* Ignore if not JSON */ }
+                     throw new Error(errorMsg);
+                 }
+
+                const result = await response.json();
+                console.log("Response from GAS:", result);
+
+                if (result.status === 'success' && result.data) {
+                    // Add the *confirmed* booking (with server timestamp) to our local data
+                    // Ensure types are correct from the response
+                    const confirmedBooking = {
+                         ...result.data,
+                         Week: parseInt(result.data.Week, 10),
+                         Period: parseInt(result.data.Period, 10),
+                         Timestamp: result.data.Timestamp // Should be ISO string
+                    };
+                    allBookingData.push(confirmedBooking);
+
+                    closeBookingForm();
+                    renderTimetable(); // Update the timetable display
+                    showNotification('Class booked successfully!', 'success');
+                } else {
+                    // Handle specific errors returned from the script (like "Slot already booked")
+                     throw new Error(result.message || 'Unknown error occurred during booking.');
+                }
+
+            } catch (error) {
+                console.error('Error submitting booking:', error);
+                showNotification(`Error: ${error.message}`, 'error');
+                // Optional: You might want to reload data here if a conflict is suspected
+                // loadBookingData();
+            } finally {
+                hideSpinner();
+                // Re-enable button in the form, even on error, unless it's closed
+                if ($('#booking-form').is(':visible')) {
+                     $('#submit-booking').prop('disabled', false);
+                }
+            }
+        }
+
+
+        // Render booking history (FILTERED to last 7 days)
+        function renderBookingHistory() {
+            console.log("Rendering booking history (last 7 days)");
+            const historyContainer = $('#history-container');
+            historyContainer.empty(); // Clear previous content
+            showSpinner('history'); // Show spinner in history area
+
+            try {
+                const now = new Date();
+                const sevenDaysAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7); // Date 7 days ago (start of the day)
+
+                // Filter allBookingData for items within the last 7 days
+                const recentBookings = allBookingData.filter(booking => {
+                    if (!booking.Timestamp) return false; // Skip items without a timestamp
+                    try {
+                        const bookingDate = new Date(booking.Timestamp);
+                        return !isNaN(bookingDate) && bookingDate >= sevenDaysAgo; // Check if valid date and within range
+                    } catch (e) {
+                        console.warn("Invalid date format encountered in history:", booking.Timestamp);
+                        return false;
+                    }
+                });
+
+                // Sort the filtered bookings by timestamp (newest first)
+                recentBookings.sort((a, b) => {
+                    const dateA = new Date(a.Timestamp);
+                    const dateB = new Date(b.Timestamp);
+                    // Handle potential invalid dates during sort
+                    if (isNaN(dateA)) return 1;
+                    if (isNaN(dateB)) return -1;
+                    return dateB - dateA; // Descending order
+                });
+
+                console.log("Filtered recent bookings:", recentBookings);
+
+                if (recentBookings.length === 0) {
+                    historyContainer.html('<p>No booking history found for the last 7 days.</p>');
+                } else {
+                    recentBookings.forEach(booking => {
+                        const historyCard = $('<div>').addClass('history-card');
+                        let formattedDate = 'N/A';
+                        if (booking.Timestamp) {
+                             try {
+                                const date = new Date(booking.Timestamp);
+                                if (!isNaN(date)) { // Check if date is valid
+                                     formattedDate = date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+                                }
+                            } catch (e) { console.error("Error formatting date:", e); }
+                        }
+
+                        historyCard.html(`
+                            <h3>${booking.Day} - Period ${booking.Period} (Week ${booking.Week})</h3>
+                            <div class="history-details">
+                                <p><strong>Staff:</strong> ${booking.StaffName || 'N/A'}</p>
+                                <p><strong>Department:</strong> ${booking.Department || 'N/A'}</p>
+                                <p><strong>Booked on:</strong> ${formattedDate}</p>
+                            </div>
+                        `);
+                        historyContainer.append(historyCard);
+                    });
+                }
+            } catch (error) {
+                 console.error("Error rendering history:", error);
+                 historyContainer.html('<p style="color: red;">Error loading history.</p>');
+            } finally {
+                 hideSpinner('history');
+            }
+
+        }
+
+
+        // --- Utility Functions (Spinners, Notifications) ---
+        function showNotification(message, type) {
+            const notification = $('#notification');
+            notification.text(message);
+            notification.removeClass('success error warning');
+            notification.addClass(type);
+            notification.addClass('show');
+
+            setTimeout(() => {
+                notification.removeClass('show');
+            }, 3500);
+        }
+
+        // Modified spinner functions to handle specific areas or general overlay
+        function showSpinner(area = null) {
+            if (area === 'timetable') {
+                 $('#timetable-spinner').show();
+            } else if (area === 'history') {
+                 $('#history-spinner').show();
+            }
+            else {
+                $('#spinner').show(); // Show general overlay spinner
+            }
+        }
+
+        function hideSpinner(area = null) {
+             if (area === 'timetable') {
+                 $('#timetable-spinner').hide();
+            } else if (area === 'history') {
+                 $('#history-spinner').hide();
+            }
+             else {
+                $('#spinner').hide(); // Hide general overlay spinner
+            }
+        }
+        // --- End Utility Functions ---
+
+    </script>
+</body>
+</html>
