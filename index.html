@@ -6,14 +6,18 @@
     <title>Smart Class Booking System</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <style>
-        /* --- Keep all your existing CSS styles here --- */
+        /* --- Updated Color Palette --- */
         :root {
-            --primary: #3498db;
-            --secondary: #2ecc71;
-            --danger: #e74c3c;
-            --warning: #f39c12;
-            --dark: #34495e;
-            --light: #ecf0f1;
+            --primary: #003366;   /* Deep Blue from Logo */
+            --secondary: #669900; /* Green from Logo */
+            --danger: #CC0000;    /* Red from Logo */
+            --warning: #FFCC00;   /* Gold/Yellow from Logo */
+            --accent: #3366CC;    /* Lighter Blue from Ribbon */
+            --dark: #34495e;      /* Kept existing dark grey */
+            --light: #f8f9fa;     /* Slightly lighter grey for background */
+            --text-light: #ffffff;
+            --text-dark: #333333;
+            --border-color: #dee2e6; /* Consistent border color */
         }
 
         * {
@@ -24,8 +28,9 @@
         }
 
         body {
-            background-color: #f5f7fa;
-            color: #333;
+            background-color: var(--light); /* Use light grey background */
+            color: var(--text-dark);
+            line-height: 1.6; /* Improve readability */
         }
 
         .container {
@@ -34,56 +39,87 @@
             padding: 20px;
         }
 
+        /* --- Updated Header Styles --- */
         header {
             background-color: var(--primary);
-            color: white;
-            padding: 20px 0;
+            color: var(--text-light);
+            padding: 15px 0; /* Slightly reduced padding */
             text-align: center;
             margin-bottom: 30px;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Slightly enhanced shadow */
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px; /* Space between logo and title */
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+        }
+
+        #header-logo {
+            max-height: 60px; /* Control logo size */
+            width: auto;      /* Maintain aspect ratio */
         }
 
         header h1 {
-            margin-bottom: 10px;
+            margin: 0; /* Remove default margin */
+            font-size: 1.8em; /* Adjust size as needed */
+            font-weight: 600;
         }
+        /* --- End Header Styles --- */
+
 
         .tabs {
             display: flex;
-            background-color: white;
+            background-color: var(--text-light);
             border-radius: 8px;
             overflow: hidden;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .tab {
-            padding: 15px 0;
+            padding: 15px 10px; /* Adjusted padding */
             flex: 1;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 600;
+            color: var(--primary); /* Use primary color for text */
+            border-bottom: 3px solid transparent; /* Underline effect prep */
         }
 
         .tab.active {
-            background-color: var(--primary);
-            color: white;
+            background-color: transparent; /* No background change */
+            color: var(--primary);
+            font-weight: 700;
+            border-bottom: 3px solid var(--primary); /* Active underline */
         }
 
         .tab:hover:not(.active) {
-            background-color: var(--light);
+            background-color: rgba(0, 51, 102, 0.05); /* Subtle primary hover */
+            color: #002244; /* Darker shade on hover */
         }
 
         .tab-content {
             display: none;
-            background-color: white;
-            padding: 20px;
+            background-color: var(--text-light);
+            padding: 25px; /* Increased padding */
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
             animation: fadeIn 0.5s;
-            min-height: 300px; /* Ensure content area has some height */
+            min-height: 300px;
         }
+
+        .tab-content h2 {
+             color: var(--primary); /* Use primary color for headings */
+             margin-bottom: 20px;
+             text-align: center;
+             font-weight: 600;
+        }
+
 
         .tab-content.active {
             display: block;
@@ -94,68 +130,76 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- New Timetable Grid Styles --- */
+        /* --- Timetable Styles with New Palette --- */
         .timetable-container {
             margin-top: 20px;
-            position: relative; /* Needed for spinner positioning */
-            min-height: 400px; /* Ensure container has height while loading */
+            position: relative;
+            min-height: 400px;
         }
 
         .timetable-grid {
             display: flex;
             flex-direction: column;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            overflow: hidden; /* Ensures rounded corners are applied */
+            /* Border handled by container on mobile */
         }
 
         .timetable-header {
             display: flex;
-            background-color: var(--dark);
-            color: white;
+            background-color: var(--dark); /* Keep dark grey for header contrast */
+            color: var(--text-light);
+            border-top-left-radius: 6px; /* Round corners */
+            border-top-right-radius: 6px;
         }
 
         .day-header {
-            flex: 1; /* Equal width columns */
+            flex: 1;
             padding: 12px 10px;
             text-align: center;
             font-weight: 600;
-            border-right: 1px solid #556a7e; /* Separator lines */
+            border-right: 1px solid #556a7e; /* Separator lines within dark bg */
+            min-width: 90px;
         }
         .day-header:last-child {
             border-right: none;
         }
-         /* Corner cell */
         .day-header.corner {
-            flex: 0 0 120px; /* Fixed width for the first 'corner' cell */
+            flex: 0 0 120px;
             background-color: var(--dark);
-             visibility: hidden; /* Keep space but hide content */
+            visibility: hidden;
+            min-width: 120px;
+            border-right: 1px solid #556a7e; /* Match separator */
         }
-
 
         .timetable-body-grid {
             display: flex;
+            background-color: var(--text-light); /* White background for body */
+            border: 1px solid var(--border-color); /* Add border to body */
+            border-top: none; /* Remove top border as header is above */
+            border-bottom-left-radius: 6px; /* Round corners */
+            border-bottom-right-radius: 6px;
         }
 
         .day-column {
-            flex: 1; /* Equal width columns */
+            flex: 1;
             display: flex;
             flex-direction: column;
-            border-right: 1px solid #ddd;
+            border-right: 1px solid var(--border-color);
+            min-width: 90px;
         }
         .day-column:last-child {
             border-right: none;
         }
-         /* First 'column' for Period Labels */
         .day-column.period-labels {
-            flex: 0 0 120px; /* Fixed width matching corner header */
-            background-color: #f9f9f9; /* Light background for distinction */
+            flex: 0 0 120px;
+            background-color: #f1f3f5; /* Lighter grey for period labels */
+            min-width: 120px;
+            border-right: 1px solid var(--border-color); /* Match separator */
         }
 
         .period-slot, .period-label {
             padding: 10px;
-            min-height: 80px; /* Ensure consistent height */
-            border-bottom: 1px solid #ddd;
+            min-height: 80px;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -165,8 +209,8 @@
         }
         .period-label {
             font-weight: 600;
+            color: var(--primary); /* Make labels primary color */
         }
-         /* Remove bottom border from last slot in each column */
         .day-column .period-slot:last-child,
         .day-column.period-labels .period-label:last-child {
             border-bottom: none;
@@ -175,28 +219,34 @@
         .period-slot.available {
             cursor: pointer;
             transition: background-color 0.3s ease;
+            color: #333; /* Default text color for available */
         }
 
         .period-slot.available:hover {
-            background-color: rgba(46, 204, 113, 0.15);
+            background-color: rgba(0, 51, 102, 0.1); /* Lighter primary blue tint on hover */
         }
 
         .period-slot.booked {
-            background-color: rgba(231, 76, 60, 0.1);
+             /* Use danger color subtly */
+            background-color: rgba(204, 0, 0, 0.08);
+            border-left: 3px solid var(--danger); /* Add visual indicator */
             cursor: not-allowed;
+            padding-left: 7px; /* Adjust padding due to border */
         }
 
         .booked-info {
             font-size: 12px;
             line-height: 1.4;
-            font-weight: normal; /* Override potential inherited bold */
+            font-weight: normal;
+            color: #555; /* Slightly muted text for booked info */
         }
          .booked-info strong {
-             font-weight: 600; /* Make staff name bold again */
-             display: block; /* Put name on its own line */
+             font-weight: 600;
+             display: block;
              margin-bottom: 2px;
+             color: var(--text-dark); /* Darker text for name */
          }
-        /* --- End Timetable Grid Styles --- */
+        /* --- End Timetable Styles --- */
 
         .form-group {
             margin-bottom: 15px;
@@ -206,16 +256,24 @@
             display: block;
             margin-bottom: 5px;
             font-weight: 600;
+            color: var(--primary); /* Primary color for labels */
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
+            padding: 10px 12px; /* Adjust padding */
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             font-size: 16px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
+         .form-group input:focus,
+         .form-group select:focus {
+             border-color: var(--accent); /* Use accent color for focus */
+             box-shadow: 0 0 0 2px rgba(51, 102, 204, 0.2); /* Subtle focus ring */
+             outline: none;
+         }
 
         .booking-form {
             display: none;
@@ -223,14 +281,19 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
+            background-color: var(--text-light);
+            padding: 25px 30px; /* More padding */
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             z-index: 1000;
-            width: 400px;
+            width: 420px; /* Slightly wider */
             max-width: 90%;
         }
+         .booking-form h2 {
+             text-align: center;
+             color: var(--primary);
+             margin-bottom: 10px;
+         }
 
         .overlay {
             display: none;
@@ -239,77 +302,110 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.6); /* Darker overlay */
             z-index: 999;
         }
 
+        /* --- Button Styles --- */
         .btn {
             display: inline-block;
-            padding: 10px 20px;
+            padding: 10px 25px; /* More horizontal padding */
             border: none;
-            border-radius: 4px;
+            border-radius: 5px; /* Slightly more rounded */
             cursor: pointer;
             font-size: 16px;
             font-weight: 600;
             transition: all 0.3s ease;
+            text-transform: uppercase; /* Uppercase text */
+            letter-spacing: 0.5px; /* Slight spacing */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .btn:disabled {
             background-color: #bdc3c7;
             cursor: not-allowed;
+            box-shadow: none;
+            color: #7f8c8d;
         }
-
 
         .btn-primary {
             background-color: var(--primary);
-            color: white;
+            color: var(--text-light);
         }
-
         .btn-primary:hover:not(:disabled) {
-            background-color: #2980b9;
+            background-color: #002244; /* Darker shade of primary */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            transform: translateY(-1px); /* Subtle lift */
         }
 
         .btn-danger {
             background-color: var(--danger);
-            color: white;
+            color: var(--text-light);
         }
-
         .btn-danger:hover:not(:disabled) {
-            background-color: #c0392b;
+            background-color: #a50000; /* Darker shade of danger */
+             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+             transform: translateY(-1px);
         }
+         /* Example using accent color for a secondary action if needed */
+         .btn-secondary {
+             background-color: var(--accent);
+             color: var(--text-light);
+         }
+          .btn-secondary:hover:not(:disabled) {
+             background-color: #2558B8; /* Darker accent */
+             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+             transform: translateY(-1px);
+         }
+        /* --- End Button Styles --- */
 
         .form-buttons {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
+            margin-top: 25px;
         }
 
+        /* --- History Card Styles --- */
         .history-card {
-            background-color: white;
+            background-color: var(--text-light);
             border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid var(--primary);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid var(--primary); /* Use primary color border */
+            transition: box-shadow 0.3s ease;
         }
+         .history-card:hover {
+             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+         }
 
         .history-card h3 {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             color: var(--primary);
+            font-size: 1.15em;
+            font-weight: 600;
         }
 
         .history-details {
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
+            gap: 5px 15px; /* Row and column gap */
         }
 
         .history-details p {
             margin-bottom: 5px;
-            flex: 1 0 50%; /* Allow wrapping on smaller screens */
+            flex: 1 1 45%; /* Allow wrapping, aim for two columns */
+            font-size: 0.95em;
+            color: #555;
         }
+         .history-details p strong {
+             color: var(--text-dark);
+             margin-right: 5px;
+         }
+         /* --- End History Card Styles --- */
 
-        .spinner {
-            /* General spinner for full page overlay */
+        /* --- Spinner --- */
+         .spinner {
             display: none;
             position: fixed;
             top: 50%;
@@ -318,103 +414,195 @@
             z-index: 2000;
         }
         .spinner.inline {
-             /* Spinner for specific containers like timetable */
-            position: absolute; /* Position relative to parent */
+            position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 5; /* Above content but below overlay */
+            z-index: 5;
         }
-
-
         .spinner:after {
             content: '';
             display: block;
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            border: 6px solid var(--primary);
-            border-color: var(--primary) transparent var(--primary) transparent;
+            border: 6px solid var(--text-light); /* Light border base */
+            border-color: var(--primary) transparent var(--primary) transparent; /* Use primary color */
             animation: spin 1.2s linear infinite;
         }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        /* --- End Spinner --- */
 
+        /* --- Notification Styles --- */
         .notification {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            padding: 15px 20px;
-            border-radius: 4px;
-            color: white;
+            padding: 15px 25px;
+            border-radius: 6px;
+            color: var(--text-light);
             font-weight: 600;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             z-index: 1500;
-            transform: translateY(100px);
+            transform: translateY(120px); /* Start further down */
             opacity: 0;
-            transition: all 0.3s ease;
+            transition: transform 0.4s ease, opacity 0.4s ease; /* Smoother transition */
+            font-size: 0.95em;
         }
 
         .notification.success {
-            background-color: var(--secondary);
+            background-color: var(--secondary); /* Use green */
         }
-
         .notification.error {
-            background-color: var(--danger);
+            background-color: var(--danger); /* Use red */
         }
-         .notification.warning { /* Added warning style */
-            background-color: var(--warning);
-            color: #333; /* Darker text for yellow */
+        .notification.warning {
+            background-color: var(--warning); /* Use gold */
+            color: var(--text-dark); /* Dark text on yellow */
         }
-
         .notification.show {
             transform: translateY(0);
             opacity: 1;
         }
+        /* --- End Notification Styles --- */
 
+
+        /* --- Responsive Styles --- */
         @media (max-width: 768px) {
+            .header-content {
+                 gap: 10px; /* Reduce gap */
+            }
+            #header-logo {
+                max-height: 50px; /* Smaller logo */
+            }
+             header h1 {
+                 font-size: 1.5em;
+            }
+
+            .timetable-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                border: 1px solid var(--border-color); /* Use consistent border */
+                border-radius: 6px;
+                min-height: 300px;
+                 background-color: var(--text-light); /* Ensure bg for container */
+            }
+            .timetable-grid {
+                 min-width: 600px;
+                 border: none;
+                 border-radius: 0;
+            }
+             /* Timetable header needs border radius adjusted inside scroll */
+            .timetable-header {
+                 border-radius: 0;
+                 border-bottom: 1px solid #556a7e; /* Add bottom border for separation */
+             }
+             /* Timetable body needs border/radius adjusted inside scroll */
+             .timetable-body-grid {
+                 border: none;
+                 border-radius: 0;
+             }
+
+
             .day-header, .period-slot, .period-label {
                 padding: 8px 5px;
-                font-size: 12px; /* Smaller font on mobile */
-                min-height: 65px;
+                font-size: 11px;
+                min-height: 60px;
+                line-height: 1.3;
             }
+             .day-header, .day-column {
+                 min-width: 80px;
+             }
             .day-header.corner, .day-column.period-labels {
-                flex: 0 0 80px; /* Smaller fixed width on mobile */
+                flex: 0 0 80px;
+                min-width: 80px;
             }
+
             .booked-info {
                 font-size: 10px;
             }
-            .history-details p {
-                 flex: 1 0 100%; /* Stack history details vertically */
+             .period-slot.booked {
+                border-left-width: 2px; /* Thinner border on mobile */
+                padding-left: 8px;
             }
-             .timetable-container { min-height: 300px; }
+            .history-details p {
+                 flex: 1 1 100%; /* Stack history details */
+                 font-size: 0.9em;
+            }
+             .booking-form {
+                 width: 90%;
+                 padding: 20px;
+             }
+              .btn {
+                  padding: 8px 18px;
+                  font-size: 14px;
+              }
         }
+
          @media (max-width: 480px) {
+             #header-logo {
+                max-height: 40px; /* Even smaller logo */
+            }
+             header h1 {
+                 font-size: 1.3em;
+             }
+             .timetable-grid {
+                 min-width: 540px; /* Adjust minimum width */
+             }
+
              .day-header, .period-slot, .period-label {
                  font-size: 10px;
                  min-height: 55px;
              }
+             .day-header, .day-column {
+                 min-width: 70px;
+             }
              .day-header.corner, .day-column.period-labels {
-                 flex: 0 0 60px; /* Even smaller fixed width */
+                 flex: 0 0 60px;
+                  min-width: 60px;
              }
              .booking-form {
                  width: 95%;
              }
-             header h1 { font-size: 1.5em; }
              .timetable-container { min-height: 250px; }
+             .notification {
+                 width: calc(100% - 40px); /* Full width notifications */
+                 bottom: 10px;
+                 right: 10px;
+                 left: 10px; /* Center it basically */
+                 text-align: center;
+             }
+              .history-card {
+                  padding: 15px;
+              }
+              .history-details p {
+                  font-size: 0.85em;
+              }
+               .btn {
+                  padding: 8px 15px;
+                  font-size: 13px;
+              }
 
          }
     </style>
 </head>
 <body>
+    <!-- Rest of your HTML body remains the same -->
+
     <div class="container">
-        <header>
-            <h1>Smart Class Booking</h1>
-            <!-- <p>Book classes easily across the week</p> -->
-        </header>
+            <!-- Replace your existing <header> with this -->
+    <header>
+        <div class="header-content" style="background-color: white;">
+             <!-- === ADD LOGO IMAGE HERE === -->
+             <!-- Replace 'srm-trp-logo.png' with the actual path/URL to your logo -->
+            <img src="Logo.png" alt="SRM TRP College Logo" id="header-logo">
+            <h1 style="color: #003366;">Smart Class Booking</h1>
+        </div>
+    </header>
+    <!-- The rest of your HTML body remains the same -->
 
         <div class="tabs">
             <div class="tab active" data-tab="booking">Booking</div>
@@ -424,10 +612,11 @@
         <div id="booking" class="tab-content active">
             <h2>Click on available to book the class</h2>
             <!-- <p class="week-info">Week: <span id="current-week">Loading...</span></p> -->
+            <!-- The timetable-container will now handle scrolling -->
             <div class="timetable-container" id="timetable-grid-container">
-                <!-- Spinner specifically for the timetable loading -->
                  <div class="spinner inline" id="timetable-spinner"></div>
                  <!-- Grid will be populated dynamically by JS -->
+                 <!-- The .timetable-grid generated by JS will be placed here -->
             </div>
         </div>
 
@@ -461,7 +650,7 @@
                     <option value="MECH">MECH</option>
                     <option value="IT">IT</option>
                     <option value="CIVIL">CIVIL</option>
-                    
+
                 </select>
             </div>
             <input type="hidden" id="selected-day">
@@ -474,9 +663,11 @@
     </div>
 
     <!-- General loading spinner (full page) -->
-    <div class="spinner" id="spinner"></div>
+    <!-- <div class="spinner" id="spinner"></div> -->
     <div class="notification" id="notification"></div>
-
+    <div style="text-align: center; padding-bottom: 5vh;">Developed by <span><a href="https://www.linkedin.com/in/balamurugankarthikeyan/">Balamurugan.K</a></span> and <span><a href="https://www.linkedin.com/in/ajay-dhisone-134266258/">Ajay dhisone</a></span> from Artifial intellingence and Data science  (Batch : 2022 - 2026)</div>
+    <!-- <p style="text-align: center;">All rights reserved &copy; 2025</p> -->
+    <!-- Your existing <script> block remains the same -->
     <script>
         // ******** IMPORTANT: PASTE YOUR DEPLOYED WEB APP URL HERE ********
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxS4WVdR-ediExBCb1_xG8E3RDavuvzHWS_RnuoQyC_FRbRz3mm7he_nMDoaIpymkBU/exec';
@@ -541,18 +732,28 @@
             const startOfYear = new Date(now.getFullYear(), 0, 1);
             const pastDays = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
             const dayOfWeek = startOfYear.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
-            currentWeek = Math.ceil((pastDays + dayOfWeek + 1) / 7);
+            // Let's use ISO week date standard calculation which often starts week on Monday
+            // Create a date object for the current day
+            const currentDate = new Date();
+            // Set to Thursday of the current week to avoid issues near year change
+            currentDate.setDate(currentDate.getDate() + 4 - (currentDate.getDay() || 7));
+            // Get the first day of the year
+            const yearStart = new Date(currentDate.getFullYear(), 0, 1);
+            // Calculate full weeks to nearest Thursday
+            currentWeek = Math.ceil((((currentDate - yearStart) / 86400000) + 1) / 7);
 
-             // Adjust week number if it's Sat/Sun to show the *upcoming* Mon-Fri week
-            const todayDay = now.getDay(); // 0 = Sunday, 6 = Saturday
-             // No adjustment needed based on testing, week calc seems correct for ISO week start? Let's re-evaluate if needed.
-             // Simple logic: Show the week number containing the *upcoming* Monday if it's Sat/Sun?
-             // Let's stick to standard week calc for now.
+
+            //console.log("Calculated week:", currentWeek);
 
             const monday = getMonday(now);
-            const friday = getFriday(new Date(monday)); // Pass a copy
+            const saturday = getSaturday(new Date(monday)); // Pass a copy
 
-             $('#current-week').text(`Week ${currentWeek} (${formatDate(monday)} - ${formatDate(friday)})`);
+             //$('#current-week').text(`Week ${currentWeek} (${formatDate(monday)} - ${formatDate(saturday)})`); // Update if needed
+             // Optional: Add week info display if desired
+             // if (!$('.week-info').length) {
+             //    $('#booking h2').after('<p class="week-info" style="text-align:center; margin-bottom: 15px;">Week: <span id="current-week"></span></p>');
+             // }
+             // $('#current-week').text(`${currentWeek} (${formatDate(monday)} - ${formatDate(saturday)})`);
         }
 
         function getMonday(d) {
@@ -562,11 +763,13 @@
             return new Date(d.setDate(diff));
         }
 
-        function getFriday(d) {
+        // Function to get Saturday of the same week
+        function getSaturday(d) {
              d = new Date(d); // Use the monday passed in
-            var diff = d.getDate() + 4; // Monday + 4 days = Friday
+            var diff = d.getDate() + 5; // Monday + 5 days = Saturday
             return new Date(d.setDate(diff));
         }
+
 
         function formatDate(date) {
             const year = date.getFullYear();
@@ -605,6 +808,12 @@
                 }
 
                 // Process data - Ensure correct types (especially numbers)
+                 // Check if data is the expected array
+                 if (!Array.isArray(data)) {
+                     console.error("Received data is not an array:", data);
+                     throw new Error("Invalid data format received from server.");
+                 }
+
                 allBookingData = data.map(item => ({
                     ...item,
                     // Header names from GAS should match keys here
@@ -640,15 +849,19 @@
             const container = $('#timetable-grid-container');
             container.empty(); // Clear previous grid or spinner/error message
 
-            const grid = $('<div>').addClass('timetable-grid');
+            // NOTE: The .timetable-container now handles scrolling via CSS.
+            // We just need to generate the .timetable-grid inside it.
+            const grid = $('<div>').addClass('timetable-grid'); // This grid will have min-width set via CSS
             const header = $('<div>').addClass('timetable-header');
             const body = $('<div>').addClass('timetable-body-grid');
 
-            header.append($('<div>').addClass('day-header corner').html(' '));
+             // Header: Corner + Days
+            header.append($('<div>').addClass('day-header corner').html(' ')); // Use   for spacing if visibility:hidden
             daysOfWeek.forEach(day => {
                 header.append($('<div>').addClass('day-header').text(day));
             });
 
+             // Body: Period Labels Column + Day Columns
             const periodLabelColumn = $('<div>').addClass('day-column period-labels');
             for (let period = 1; period <= totalPeriods; period++) {
                 periodLabelColumn.append($('<div>').addClass('period-label').text(`Period ${period}`));
@@ -688,7 +901,7 @@
 
             grid.append(header);
             grid.append(body);
-            container.append(grid);
+            container.append(grid); // Append the potentially wide grid into the scrollable container
         }
 
 
@@ -786,7 +999,8 @@
                 const result = await response.json();
                 console.log("Response from GAS:", result);
 
-                if (result.status === 'success' && result.data) {
+                 // Check the structure of the success response more carefully
+                 if (result.status === 'success' && result.data && typeof result.data === 'object') {
                     // Add the *confirmed* booking (with server timestamp) to our local data
                     // Ensure types are correct from the response
                     const confirmedBooking = {
@@ -801,15 +1015,22 @@
                     renderTimetable(); // Update the timetable display
                     showNotification('Class booked successfully!', 'success');
                 } else {
-                    // Handle specific errors returned from the script (like "Slot already booked")
-                     throw new Error(result.message || 'Unknown error occurred during booking.');
+                     // Handle specific errors returned from the script (like "Slot already booked")
+                     // Or handle cases where result.data might be missing or malformed
+                     throw new Error(result.message || 'Booking failed or invalid response received.');
                 }
 
             } catch (error) {
                 console.error('Error submitting booking:', error);
-                showNotification(`Error: ${error.message}`, 'error');
-                // Optional: You might want to reload data here if a conflict is suspected
-                // loadBookingData();
+                // Check if the error message indicates the slot is already booked
+                if (error.message && error.message.toLowerCase().includes('already booked')) {
+                    showNotification(`${error.message} Refreshing data...`, 'warning');
+                    // Force reload data after showing the message
+                     setTimeout(loadBookingData, 1500); // Give user time to see message
+                } else {
+                    showNotification(`Error: ${error.message}`, 'error');
+                }
+                // Don't reload data automatically for other errors, let user decide.
             } finally {
                 hideSpinner();
                 // Re-enable button in the form, even on error, unless it's closed
@@ -830,13 +1051,18 @@
             try {
                 const now = new Date();
                 const sevenDaysAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7); // Date 7 days ago (start of the day)
+                sevenDaysAgo.setHours(0, 0, 0, 0); // Ensure it's the beginning of the day
 
                 // Filter allBookingData for items within the last 7 days
                 const recentBookings = allBookingData.filter(booking => {
-                    if (!booking.Timestamp) return false; // Skip items without a timestamp
+                    if (!booking.Timestamp) {
+                         //console.warn("Booking missing timestamp:", booking);
+                         return false; // Skip items without a timestamp
+                     }
                     try {
                         const bookingDate = new Date(booking.Timestamp);
-                        return !isNaN(bookingDate) && bookingDate >= sevenDaysAgo; // Check if valid date and within range
+                         // Check if the date is valid *and* within the range
+                        return !isNaN(bookingDate) && bookingDate >= sevenDaysAgo && bookingDate <= now;
                     } catch (e) {
                         console.warn("Invalid date format encountered in history:", booking.Timestamp);
                         return false;
@@ -845,12 +1071,18 @@
 
                 // Sort the filtered bookings by timestamp (newest first)
                 recentBookings.sort((a, b) => {
-                    const dateA = new Date(a.Timestamp);
-                    const dateB = new Date(b.Timestamp);
-                    // Handle potential invalid dates during sort
-                    if (isNaN(dateA)) return 1;
-                    if (isNaN(dateB)) return -1;
-                    return dateB - dateA; // Descending order
+                     // Handle potential missing or invalid timestamps during sort
+                    const dateA = a.Timestamp ? new Date(a.Timestamp) : null;
+                    const dateB = b.Timestamp ? new Date(b.Timestamp) : null;
+
+                    if (!dateA && !dateB) return 0; // Both invalid/missing
+                    if (!dateA) return 1;  // Sort invalid A after valid B
+                    if (!dateB) return -1; // Sort invalid B after valid A
+                    if (isNaN(dateA) && isNaN(dateB)) return 0; // Both invalid dates
+                    if (isNaN(dateA)) return 1; // Sort invalid A after valid B
+                    if (isNaN(dateB)) return -1; // Sort invalid B after valid A
+
+                    return dateB - dateA; // Descending order (newest first)
                 });
 
                 console.log("Filtered recent bookings:", recentBookings);
@@ -871,7 +1103,7 @@
                         }
 
                         historyCard.html(`
-                            <h3>${booking.Day} - Period ${booking.Period} (Week ${booking.Week})</h3>
+                            <h3>${booking.Day || 'N/A'} - Period ${booking.Period || 'N/A'} (Week ${booking.Week || 'N/A'})</h3>
                             <div class="history-details">
                                 <p><strong>Staff:</strong> ${booking.StaffName || 'N/A'}</p>
                                 <p><strong>Department:</strong> ${booking.Department || 'N/A'}</p>
@@ -895,13 +1127,25 @@
         function showNotification(message, type) {
             const notification = $('#notification');
             notification.text(message);
-            notification.removeClass('success error warning');
-            notification.addClass(type);
+            notification.removeClass('success error warning'); // Clear previous types
+            notification.addClass(type); // Add current type
+
+             // Force reflow to restart animation if notification is already shown
+             notification.removeClass('show');
+             void notification.offsetWidth; // Trigger reflow
+
             notification.addClass('show');
 
-            setTimeout(() => {
+             // Auto-hide after a delay
+            // Clear any existing timer before setting a new one
+             if (notification.data('hideTimeout')) {
+                 clearTimeout(notification.data('hideTimeout'));
+             }
+            const timeoutId = setTimeout(() => {
                 notification.removeClass('show');
+                 notification.removeData('hideTimeout'); // Clean up data attribute
             }, 3500);
+             notification.data('hideTimeout', timeoutId); // Store timer ID
         }
 
         // Modified spinner functions to handle specific areas or general overlay
@@ -913,6 +1157,7 @@
             }
             else {
                 $('#spinner').show(); // Show general overlay spinner
+                 $('#overlay').fadeIn(100); // Show overlay with spinner
             }
         }
 
@@ -924,6 +1169,10 @@
             }
              else {
                 $('#spinner').hide(); // Hide general overlay spinner
+                 // Only hide overlay if no other spinners are potentially active (simplistic check)
+                 if (!$('#timetable-spinner').is(':visible') && !$('#history-spinner').is(':visible')) {
+                    $('#overlay').fadeOut(100);
+                 }
             }
         }
         // --- End Utility Functions ---
