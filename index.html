@@ -56,17 +56,27 @@
             justify-content: center;
             gap: 15px; /* Space between logo and title */
             flex-wrap: wrap; /* Allow wrapping on small screens */
+            background-color: white; /* Ensure white background for content */
+            border-radius: 8px; /* Match header radius if needed */
+            padding: 10px; /* Padding inside the white area */
         }
 
         #header-logo {
             max-height: 60px; /* Control logo size */
             width: auto;      /* Maintain aspect ratio */
+            cursor: pointer; /* Make logo clickable for admin access */
+            transition: transform 0.2s ease;
         }
+        #header-logo:hover {
+             transform: scale(1.05); /* Optional: slight zoom on hover */
+        }
+
 
         header h1 {
             margin: 0; /* Remove default margin */
             font-size: 1.8em; /* Adjust size as needed */
             font-weight: 600;
+            color: #003366; /* Set title color since background is white */
         }
         /* --- End Header Styles --- */
 
@@ -130,53 +140,69 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- Timetable Styles with New Palette --- */
+        /* --- Timetable Styles --- */
         .timetable-container {
             margin-top: 20px;
             position: relative;
-            min-height: 400px;
+            min-height: 400px; /* Adjust as needed */
+            overflow-x: auto; /* Enable horizontal scroll on container */
+             -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+             border: 1px solid var(--border-color); /* Add border for visual boundary */
+             border-radius: 6px;
+             background-color: var(--text-light); /* Ensure bg for container */
         }
 
         .timetable-grid {
             display: flex;
             flex-direction: column;
-            /* Border handled by container on mobile */
+            min-width: 700px; /* Ensure grid is wide enough to cause scroll */
+            border: none; /* Remove border from grid itself */
         }
 
         .timetable-header {
             display: flex;
             background-color: var(--dark); /* Keep dark grey for header contrast */
             color: var(--text-light);
-            border-top-left-radius: 6px; /* Round corners */
-            border-top-right-radius: 6px;
+            border-bottom: 1px solid #556a7e; /* Add bottom border for separation */
+             flex-shrink: 0; /* Prevent header from shrinking */
         }
 
         .day-header {
             flex: 1;
-            padding: 12px 10px;
+            padding: 8px 5px; /* Adjusted padding */
             text-align: center;
             font-weight: 600;
-            border-right: 1px solid #556a7e; /* Separator lines within dark bg */
+            border-right: 1px solid #556a7e;
             min-width: 90px;
+            display: flex; /* Enable flex for centering */
+            flex-direction: column; /* Stack day and date */
+            justify-content: center; /* Center vertically */
+            align-items: center; /* Center horizontally */
         }
         .day-header:last-child {
             border-right: none;
         }
         .day-header.corner {
-            flex: 0 0 120px;
+            flex: 0 0 120px; /* Fixed width */
+            min-width: 120px; /* Ensure min width */
             background-color: var(--dark);
-            visibility: hidden;
-            min-width: 120px;
+            visibility: hidden; /* Keep for layout, but hide content */
             border-right: 1px solid #556a7e; /* Match separator */
         }
+        /* NEW Style for date in header */
+        .header-date {
+            display: block; /* Make it appear on a new line */
+            font-size: 0.75em; /* Make date smaller */
+            font-weight: normal; /* Normal weight for date */
+            margin-top: 3px; /* Add a little space */
+            opacity: 0.85; /* Slightly less prominent */
+        }
+
 
         .timetable-body-grid {
             display: flex;
             background-color: var(--text-light); /* White background for body */
-            border: 1px solid var(--border-color); /* Add border to body */
-            border-top: none; /* Remove top border as header is above */
-            border-bottom-left-radius: 6px; /* Round corners */
-            border-bottom-right-radius: 6px;
+             flex-grow: 1; /* Allow body to take remaining space */
         }
 
         .day-column {
@@ -190,10 +216,11 @@
             border-right: none;
         }
         .day-column.period-labels {
-            flex: 0 0 120px;
+            flex: 0 0 120px; /* Fixed width */
+            min-width: 120px; /* Ensure min width */
             background-color: #f1f3f5; /* Lighter grey for period labels */
-            min-width: 120px;
             border-right: 1px solid var(--border-color); /* Match separator */
+             flex-shrink: 0; /* Prevent labels column from shrinking */
         }
 
         .period-slot, .period-label {
@@ -227,7 +254,6 @@
         }
 
         .period-slot.booked {
-             /* Use danger color subtly */
             background-color: rgba(204, 0, 0, 0.08);
             border-left: 3px solid var(--danger); /* Add visual indicator */
             cursor: not-allowed;
@@ -346,7 +372,6 @@
              box-shadow: 0 4px 8px rgba(0,0,0,0.15);
              transform: translateY(-1px);
         }
-         /* Example using accent color for a secondary action if needed */
          .btn-secondary {
              background-color: var(--accent);
              color: var(--text-light);
@@ -406,7 +431,7 @@
 
         /* --- Spinner --- */
          .spinner {
-            display: none;
+            display: none; /* Hide general spinner initially */
             position: fixed;
             top: 50%;
             left: 50%;
@@ -414,13 +439,15 @@
             z-index: 2000;
         }
         .spinner.inline {
-            position: absolute;
+            display: none; /* Hide inline spinners initially */
+            position: absolute; /* Position relative to parent */
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 5;
+            z-index: 5; /* Lower z-index than overlay */
         }
-        .spinner:after {
+        /* Common spinner animation */
+        .spinner:after, .spinner.inline:after {
             content: '';
             display: block;
             width: 40px;
@@ -469,6 +496,47 @@
         }
         /* --- End Notification Styles --- */
 
+        /* --- Admin Section Styles --- */
+         #admin-auth, #admin-controls {
+             max-width: 600px;
+             margin: 20px auto;
+             padding: 20px;
+             background-color: #fdfdfe; /* Slightly off-white */
+             border: 1px solid var(--border-color);
+             border-radius: 8px;
+             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+         }
+
+         #admin-controls h3 {
+             color: var(--primary);
+             margin-bottom: 15px;
+             border-bottom: 1px solid var(--border-color);
+             padding-bottom: 8px;
+         }
+         #admin-controls .form-group {
+             display: inline-block; /* Place Day/Period side-by-side if space */
+             width: calc(50% - 10px); /* Adjust width */
+             margin-right: 15px;
+             vertical-align: top;
+         }
+          #admin-controls .form-group:last-of-type {
+              margin-right: 0;
+          }
+
+         #admin-controls button {
+             margin-top: 10px;
+         }
+         /* Simple shake animation for login error */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .shake-effect {
+            animation: shake 0.5s ease-in-out;
+        }
+         /* --- End Admin Section Styles --- */
+
 
         /* --- Responsive Styles --- */
         @media (max-width: 768px) {
@@ -483,41 +551,29 @@
             }
 
             .timetable-container {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                border: 1px solid var(--border-color); /* Use consistent border */
-                border-radius: 6px;
-                min-height: 300px;
-                 background-color: var(--text-light); /* Ensure bg for container */
+                 min-height: 300px; /* Adjust min height */
             }
             .timetable-grid {
-                 min-width: 600px;
-                 border: none;
-                 border-radius: 0;
+                 min-width: 600px; /* Adjust minimum width */
             }
-             /* Timetable header needs border radius adjusted inside scroll */
-            .timetable-header {
-                 border-radius: 0;
-                 border-bottom: 1px solid #556a7e; /* Add bottom border for separation */
-             }
-             /* Timetable body needs border/radius adjusted inside scroll */
-             .timetable-body-grid {
-                 border: none;
-                 border-radius: 0;
-             }
 
-
-            .day-header, .period-slot, .period-label {
+            .day-header { /* Adjusted padding for responsiveness */
+                 padding: 6px 4px;
+                 font-size: 11px;
+            }
+             .header-date { font-size: 0.7em; } /* Smaller date on smaller screens */
+             .period-slot, .period-label {
                 padding: 8px 5px;
-                font-size: 11px;
                 min-height: 60px;
                 line-height: 1.3;
+                 font-size: 11px;
             }
+
              .day-header, .day-column {
                  min-width: 80px;
              }
             .day-header.corner, .day-column.period-labels {
-                flex: 0 0 80px;
+                flex: 0 0 80px; /* Adjust fixed width */
                 min-width: 80px;
             }
 
@@ -542,6 +598,14 @@
               }
         }
 
+         @media (max-width: 500px) { /* Further adjustments for smaller screens */
+              #admin-controls .form-group {
+                 width: 100%;
+                 margin-right: 0;
+                 margin-bottom: 10px; /* Add space when stacked */
+              }
+         }
+
          @media (max-width: 480px) {
              #header-logo {
                 max-height: 40px; /* Even smaller logo */
@@ -549,25 +613,28 @@
              header h1 {
                  font-size: 1.3em;
              }
+             .timetable-container { min-height: 250px; }
              .timetable-grid {
                  min-width: 540px; /* Adjust minimum width */
              }
 
-             .day-header, .period-slot, .period-label {
-                 font-size: 10px;
-                 min-height: 55px;
+            .day-header { font-size: 10px; }
+            .header-date { font-size: 0.65em;}
+             .period-slot, .period-label {
+                font-size: 10px;
+                min-height: 55px;
              }
              .day-header, .day-column {
                  min-width: 70px;
              }
              .day-header.corner, .day-column.period-labels {
-                 flex: 0 0 60px;
+                 flex: 0 0 60px; /* Adjust fixed width */
                   min-width: 60px;
              }
              .booking-form {
                  width: 95%;
              }
-             .timetable-container { min-height: 250px; }
+
              .notification {
                  width: calc(100% - 40px); /* Full width notifications */
                  bottom: 10px;
@@ -585,598 +652,317 @@
                   padding: 8px 15px;
                   font-size: 13px;
               }
-
          }
     </style>
 </head>
 <body>
-    <!-- Rest of your HTML body remains the same -->
 
     <div class="container">
-            <!-- Replace your existing <header> with this -->
-    <header>
-        <div class="header-content" style="background-color: white;">
-             <!-- === ADD LOGO IMAGE HERE === -->
-             <!-- Replace 'srm-trp-logo.png' with the actual path/URL to your logo -->
-            <img src="Logo.png" alt="SRM TRP College Logo" id="header-logo">
-            <h1 style="color: #003366;">Smart Class Booking</h1>
-        </div>
-    </header>
-    <!-- The rest of your HTML body remains the same -->
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <img src="Logo.png" alt="College Logo - Admin Access" title="Admin Access" id="header-logo">
+                <h1 style="color: #003366;">Smart Class Booking</h1>
+            </div>
+        </header>
 
+        <!-- Tabs -->
         <div class="tabs">
             <div class="tab active" data-tab="booking">Booking</div>
             <div class="tab" data-tab="history">Booking History</div>
+            <!-- No Admin Tab -->
         </div>
 
+        <!-- Booking Tab Content -->
         <div id="booking" class="tab-content active">
             <h2>Click on available to book the class</h2>
-            <!-- <p class="week-info">Week: <span id="current-week">Loading...</span></p> -->
-            <!-- The timetable-container will now handle scrolling -->
             <div class="timetable-container" id="timetable-grid-container">
                  <div class="spinner inline" id="timetable-spinner"></div>
-                 <!-- Grid will be populated dynamically by JS -->
-                 <!-- The .timetable-grid generated by JS will be placed here -->
+                 <!-- Timetable grid -->
             </div>
         </div>
 
+        <!-- History Tab Content -->
         <div id="history" class="tab-content">
             <h2>Booking History (Last 7 Days)</h2>
             <div id="history-container">
-                 <div class="spinner inline" id="history-spinner" style="display:none;"></div>
-                <!-- Will be populated dynamically -->
+                 <div class="spinner inline" id="history-spinner"></div>
+                <!-- History cards -->
             </div>
         </div>
-    </div>
+
+        <!-- Admin Content Div - Hidden By Default, Shown by Logo Click -->
+        <div id="admin" class="tab-content" style="display: none;">
+            <h2>Admin Panel</h2>
+            <div id="admin-auth">
+                <p>Enter Admin Credentials:</p>
+                 <div class="form-group" style="max-width: 350px; margin: 15px auto;">
+                     <label for="admin-name" style="text-align: left;">Name</label>
+                     <input type="text" id="admin-name" placeholder="Enter Name">
+                 </div>
+                  <div class="form-group" style="max-width: 350px; margin: 15px auto;">
+                     <label for="admin-pin" style="text-align: left;">PIN</label>
+                     <input type="password" id="admin-pin" placeholder="Enter 5-Character PIN" maxlength="5">
+                 </div>
+                 <button class="btn btn-primary" id="admin-login-btn" style="display: block; margin: 20px auto 0 auto;">Login</button>
+                 <p id="admin-auth-error" style="color: var(--danger); text-align: center; margin-top: 10px; display: none;"></p>
+            </div>
+            <div id="admin-controls" style="display: none;">
+                <hr style="margin: 25px 0;">
+                <h3>Remove Specific Booking (Current Week)</h3>
+                 <div class="form-group"><label for="admin-remove-day">Day</label><select id="admin-remove-day" required><option value="">Select Day</option><option value="Monday">Monday</option><option value="Tuesday">Tuesday</option><option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option><option value="Friday">Friday</option><option value="Saturday">Saturday</option></select></div>
+                 <div class="form-group"><label for="admin-remove-period">Period (1-8)</label><input type="number" id="admin-remove-period" min="1" max="8" required></div>
+                 <button class="btn btn-danger" id="admin-remove-booking-btn">Remove Booking</button>
+                <hr style="margin: 25px 0;">
+                <h3>Clear Timetable (Current Week)</h3>
+                 <p style="color: var(--danger); margin-bottom: 10px;"><strong>Warning:</strong> This will remove ALL bookings for the currently displayed week (<span id="admin-current-week">Loading...</span>).</p>
+                 <button class="btn btn-danger" id="admin-clear-timetable-btn">Clear Current Week's Timetable</button>
+                <hr style="margin: 25px 0;">
+                <h3>Download Booking History</h3>
+                 <p>Download all recorded booking data as a CSV file.</p>
+                 <button class="btn btn-secondary" id="admin-download-history-btn">Download History (CSV)</button>
+            </div>
+        </div>
+
+    </div> <!-- End Container -->
 
     <div class="overlay" id="overlay"></div>
-
     <div class="booking-form" id="booking-form">
         <h2>Book a Class</h2>
         <form id="class-booking-form">
              <p style="text-align: center; margin-bottom: 15px; font-weight: bold;" id="booking-form-info"></p>
-            <div class="form-group">
-                <label for="staff-name">Staff Name</label>
-                <input type="text" id="staff-name" required>
-            </div>
-            <div class="form-group">
-                <label for="department">Department</label>
-                <select id="department" required>
-                    <option value="">Select Department</option>
-                    <option value="CSE">CSE</option>
-                    <option value="EEE">EEE</option>
-                    <option value="AIDS">AIDS</option>
-                    <option value="ECE">ECE</option>
-                    <option value="MECH">MECH</option>
-                    <option value="IT">IT</option>
-                    <option value="CIVIL">CIVIL</option>
-
-                </select>
-            </div>
-            <input type="hidden" id="selected-day">
-            <input type="hidden" id="selected-period">
-            <div class="form-buttons">
-                <button type="button" class="btn btn-danger" id="cancel-booking">Cancel</button>
-                <button type="submit" class="btn btn-primary" id="submit-booking">Book Class</button>
-            </div>
+            <div class="form-group"><label for="staff-name">Staff Name</label><input type="text" id="staff-name" required></div>
+            <div class="form-group"><label for="department">Department</label><select id="department" required><option value="">Select Department</option><option value="CSE">CSE</option><option value="EEE">EEE</option><option value="AIDS">AIDS</option><option value="ECE">ECE</option><option value="MECH">MECH</option><option value="IT">IT</option><option value="CIVIL">CIVIL</option></select></div>
+            <input type="hidden" id="selected-day"><input type="hidden" id="selected-period">
+            <div class="form-buttons"><button type="button" class="btn btn-danger" id="cancel-booking">Cancel</button><button type="submit" class="btn btn-primary" id="submit-booking">Book Class</button></div>
         </form>
     </div>
-
-    <!-- General loading spinner (full page) -->
-    <!-- <div class="spinner" id="spinner"></div> -->
+    <div class="spinner" id="spinner"></div>
     <div class="notification" id="notification"></div>
-    <div style="text-align: center; padding-bottom: 5vh;">Developed by <span><a href="https://www.linkedin.com/in/balamurugankarthikeyan/">Balamurugan.K</a></span> and <span><a href="https://www.linkedin.com/in/ajay-dhisone-134266258/">Ajay dhisone</a></span> from Artifial intellingence and Data science  (Batch : 2022 - 2026)</div>
-    <!-- <p style="text-align: center;">All rights reserved &copy; 2025</p> -->
-    <!-- Your existing <script> block remains the same -->
-    <script>
-        // ******** IMPORTANT: PASTE YOUR DEPLOYED WEB APP URL HERE ********
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxS4WVdR-ediExBCb1_xG8E3RDavuvzHWS_RnuoQyC_FRbRz3mm7he_nMDoaIpymkBU/exec';
-        // ******** e.g., 'https://script.google.com/macros/s/xxxxx/exec' ********
 
-        // Variables for tracking state
+    <div style="text-align: center; padding: 20px 0 5vh 0; font-size: 0.9em; color: #555;">
+        Developed by
+        <span><a href="https://www.linkedin.com/in/balamurugankarthikeyan/" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none;">Balamurugan.K</a></span> and
+        <span><a href="https://www.linkedin.com/in/ajay-dhisone-134266258/" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none;">Ajay dhisone</a></span>
+        from Artificial Intelligence and Data Science (Batch: 2022 - 2026)
+    </div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxS4WVdR-ediExBCb1_xG8E3RDavuvzHWS_RnuoQyC_FRbRz3mm7he_nMDoaIpymkBU/exec'; // Replace!
+
+        const ADMIN_NAME = "Senthooran";
+        const ADMIN_PIN = "ADM!N"; 
+        let isAdminAuthenticated = false;
+
         let currentWeek;
-        let allBookingData = []; // Holds ALL data fetched from sheet
+        let allBookingData = [];
         let selectedDay = '';
         let selectedPeriod = '';
-        const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday'];
+        const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const totalPeriods = 8;
+        let weekDateMap = {}; // Holds dates for current week's days
 
-        // Initialize the application
         $(document).ready(function() {
              if (!SCRIPT_URL || SCRIPT_URL === 'YOUR_DEPLOYED_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
-                showNotification('Error: Google Apps Script URL not set in the script.', 'error');
-                $('#timetable-spinner').hide();
-                console.error("SCRIPT_URL is not set!");
-                alert("Configuration Error: Please set the SCRIPT_URL in the HTML file.");
-                return; // Stop initialization
+                showNotification('Error: Config URL not set.', 'error'); console.error("SCRIPT_URL not set!"); alert("Config Error: SCRIPT_URL not set.");
+                $('.tab, #header-logo').css({'pointer-events':'none', 'opacity':0.6}); return;
             }
-
             setupTabNavigation();
             setupCurrentWeek();
-            loadBookingData(); // Load data from Google Sheet
+            loadBookingData();
 
-            // Event handlers
+            // --- Logo Click Listener for Admin Access ---
+            $('#header-logo').on('click', function() {
+                console.log("Logo clicked - toggling admin panel display.");
+                const isAdminPanelVisible = $('#admin').is(':visible');
+                $('.tab-content').removeClass('active').hide(); $('.tab').removeClass('active');
+                if (isAdminPanelVisible) {
+                    $('#admin').hide(); $('.tab[data-tab="booking"]').addClass('active'); $('#booking').addClass('active').show(); renderTimetable(); console.log("Admin panel hidden.");
+                } else {
+                    console.log("Showing admin panel."); $('#admin').addClass('active').show();
+                    if (!isAdminAuthenticated) { $('#admin-auth').show(); $('#admin-controls').hide(); $('#admin-auth-error').text('Please login.').show(); $('#admin-name').focus(); }
+                    else { $('#admin-auth').hide(); $('#admin-controls').show(); $('#admin-current-week').text(`Week ${currentWeek}`); }
+                    $('html, body').animate({ scrollTop: $("#admin").offset().top - 80 }, 300);
+                }
+            });
+            // --- Other Event handlers ---
             $('#cancel-booking').on('click', closeBookingForm);
             $('#overlay').on('click', closeBookingForm);
             $('#class-booking-form').on('submit', handleBookingSubmit);
-
-            $('#timetable-grid-container').on('click', '.period-slot.available', function() {
-                const day = $(this).data('day');
-                const period = $(this).data('period');
-                openBookingForm(day, period);
-            });
+            $('#timetable-grid-container').on('click', '.period-slot.available', function() { openBookingForm($(this).data('day'), $(this).data('period')); });
+            $('#admin-login-btn').on('click', handleAdminLogin);
+            $('#admin-name, #admin-pin').on('keypress', function(e) { if (e.which === 13) { handleAdminLogin(); }});
+            $('#admin-remove-booking-btn').on('click', handleRemoveBooking);
+            $('#admin-clear-timetable-btn').on('click', handleClearTimetable);
+            $('#admin-download-history-btn').on('click', handleDownloadHistory);
         });
 
-        // Setup tab navigation
+        // Handles only Booking/History tabs
         function setupTabNavigation() {
             $('.tab').on('click', function() {
                 const tabId = $(this).data('tab');
-                $('.tab').removeClass('active');
-                $(this).addClass('active');
-                $('.tab-content').removeClass('active');
-                $(`#${tabId}`).addClass('active');
-
-                if (tabId === 'history') {
-                    renderBookingHistory(); // Render history from existing data
-                }
-                 // Re-render timetable if booking tab becomes active again (optional, ensures latest)
-                 // else if (tabId === 'booking') {
-                 //    renderTimetable();
-                 // }
+                const $clickedTab = $(this);
+                $('#admin').hide().removeClass('active'); // Hide admin panel
+                $('.tab').removeClass('active'); $clickedTab.addClass('active');
+                $('.tab-content').removeClass('active'); $(`#${tabId}`).addClass('active').show();
+                if (tabId === 'history') { renderBookingHistory(); }
+                else if (tabId === 'booking') { renderTimetable(); }
             });
         }
 
-        // --- Date and Week Functions (Keep existing ones) ---
-         function setupCurrentWeek() {
+        // Setup week and calculate dates
+        function setupCurrentWeek() {
             const now = new Date();
-            const startOfYear = new Date(now.getFullYear(), 0, 1);
-            const pastDays = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
-            const dayOfWeek = startOfYear.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
-            // Let's use ISO week date standard calculation which often starts week on Monday
-            // Create a date object for the current day
-            const currentDate = new Date();
-            // Set to Thursday of the current week to avoid issues near year change
-            currentDate.setDate(currentDate.getDate() + 4 - (currentDate.getDay() || 7));
-            // Get the first day of the year
-            const yearStart = new Date(currentDate.getFullYear(), 0, 1);
-            // Calculate full weeks to nearest Thursday
+            const currentDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+            currentDate.setUTCDate(currentDate.getUTCDate() + 4 - (currentDate.getUTCDay() || 7));
+            const yearStart = new Date(Date.UTC(currentDate.getUTCFullYear(), 0, 1));
             currentWeek = Math.ceil((((currentDate - yearStart) / 86400000) + 1) / 7);
-
-
-            //console.log("Calculated week:", currentWeek);
-
-            const monday = getMonday(now);
-            const saturday = getSaturday(new Date(monday)); // Pass a copy
-
-             //$('#current-week').text(`Week ${currentWeek} (${formatDate(monday)} - ${formatDate(saturday)})`); // Update if needed
-             // Optional: Add week info display if desired
-             // if (!$('.week-info').length) {
-             //    $('#booking h2').after('<p class="week-info" style="text-align:center; margin-bottom: 15px;">Week: <span id="current-week"></span></p>');
-             // }
-             // $('#current-week').text(`${currentWeek} (${formatDate(monday)} - ${formatDate(saturday)})`);
-        }
-
-        function getMonday(d) {
-            d = new Date(d);
-            var day = d.getDay(),
-                diff = d.getDate() - day + (day == 0 ? -6 : 1); // Adjust when day is Sunday
-            return new Date(d.setDate(diff));
-        }
-
-        // Function to get Saturday of the same week
-        function getSaturday(d) {
-             d = new Date(d); // Use the monday passed in
-            var diff = d.getDate() + 5; // Monday + 5 days = Saturday
-            return new Date(d.setDate(diff));
-        }
-
-
-        function formatDate(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-        // --- End Date Functions ---
-
-
-        // Load ALL booking data from Google Sheets via Apps Script
-        async function loadBookingData() {
-            console.log("Loading booking data from Google Sheet...");
-            showSpinner('timetable'); // Show spinner in timetable area
-            showSpinner(); // Show general overlay spinner
-
-            try {
-                const response = await fetch(SCRIPT_URL);
-
-                if (!response.ok) {
-                     // Try to get error message from response body if possible
-                     let errorMsg = `HTTP error! status: ${response.status}`;
-                     try {
-                         const errorData = await response.json();
-                         if (errorData && errorData.message) {
-                             errorMsg += ` - ${errorData.message}`;
-                         }
-                     } catch (e) { /* Ignore if response body isn't valid JSON */ }
-                    throw new Error(errorMsg);
-                }
-
-                const data = await response.json();
-
-                if (data && data.status === 'error') {
-                     throw new Error(`Error from script: ${data.message}`);
-                }
-
-                // Process data - Ensure correct types (especially numbers)
-                 // Check if data is the expected array
-                 if (!Array.isArray(data)) {
-                     console.error("Received data is not an array:", data);
-                     throw new Error("Invalid data format received from server.");
-                 }
-
-                allBookingData = data.map(item => ({
-                    ...item,
-                    // Header names from GAS should match keys here
-                    Week: parseInt(item.Week, 10),
-                    Period: parseInt(item.Period, 10),
-                    // Timestamp should already be ISO string from GAS
-                    Timestamp: item.Timestamp || null
-                }));
-
-                console.log("Booking data loaded:", allBookingData);
-                renderTimetable(); // Render timetable with current week's data
-                // If history tab is already active, render it too
-                if ($('#history').hasClass('active')) {
-                    renderBookingHistory();
-                }
-
-            } catch (error) {
-                console.error('Error loading booking data:', error);
-                showNotification(`Error loading data: ${error.message}. Please try again later.`, 'error');
-                // Optionally clear the timetable or show an error message within it
-                 $('#timetable-grid-container').html('<p style="color: red; text-align: center; padding: 20px;">Failed to load booking data.</p>');
-                 allBookingData = []; // Reset data on error
-            } finally {
-                hideSpinner('timetable');
-                hideSpinner(); // Hide general overlay spinner
+            console.log("Calculated week:", currentWeek);
+            const mondayDate = getMonday(now); weekDateMap = {};
+            for (let i = 0; i < daysOfWeek.length; i++) {
+                const dayDate = new Date(mondayDate); dayDate.setDate(mondayDate.getDate() + i);
+                weekDateMap[daysOfWeek[i]] = formatDate(dayDate);
             }
+            console.log("Week Date Map:", weekDateMap);
+            $('#admin-current-week').text(`Week ${currentWeek}`);
+        }
+        function getMonday(d) { d = new Date(d); var day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6 : 1); return new Date(d.setDate(diff)); }
+        function formatDate(date) { const y = date.getFullYear(), m = String(date.getMonth() + 1).padStart(2, '0'), d = String(date.getDate()).padStart(2, '0'); return `${y}-${m}-${d}`; }
+
+        // Load booking data
+        async function loadBookingData() {
+            console.log("Loading booking data..."); showSpinner('timetable');
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getData`);
+                if (!response.ok) { throw new Error(`HTTP error ${response.status}`); }
+                const data = await response.json();
+                if (data.status === 'error') { throw new Error(data.message); }
+                if (!Array.isArray(data)) { throw new Error("Invalid data format."); }
+                allBookingData = data.map(item => ({...item, Week: parseInt(item.Week, 10) || null, Period: parseInt(item.Period, 10) || null, Timestamp: item.Timestamp || null }))
+                                   .filter(item => item.Week !== null && item.Period !== null);
+                console.log("Booking data loaded:", allBookingData.length); renderTimetable();
+            } catch (error) { console.error('Error loading:', error); showNotification(`Load Error: ${error.message}.`, 'error'); $('#timetable-grid-container').html('<p class=err>Failed load.</p>'); allBookingData = []; }
+            finally { hideSpinner('timetable'); }
         }
 
-
-        // Render the timetable grid using the 'allBookingData'
+        // Render Timetable Grid
         function renderTimetable() {
              console.log("Rendering timetable for week:", currentWeek);
-            const container = $('#timetable-grid-container');
-            container.empty(); // Clear previous grid or spinner/error message
-
-            // NOTE: The .timetable-container now handles scrolling via CSS.
-            // We just need to generate the .timetable-grid inside it.
-            const grid = $('<div>').addClass('timetable-grid'); // This grid will have min-width set via CSS
-            const header = $('<div>').addClass('timetable-header');
-            const body = $('<div>').addClass('timetable-body-grid');
-
-             // Header: Corner + Days
-            header.append($('<div>').addClass('day-header corner').html(' ')); // Use   for spacing if visibility:hidden
+            const container = $('#timetable-grid-container'); container.empty();
+            const grid = $('<div>').addClass('timetable-grid'), header = $('<div>').addClass('timetable-header'), body = $('<div>').addClass('timetable-body-grid');
+            header.append($('<div>').addClass('day-header corner').html(' '));
             daysOfWeek.forEach(day => {
-                header.append($('<div>').addClass('day-header').text(day));
+                const dateStr = weekDateMap[day] || ''; const dh = $('<div>').addClass('day-header').append(`<div>${day}</div>`);
+                if (dateStr) dh.append(`<small class="header-date">${dateStr}</small>`); header.append(dh);
             });
-
-             // Body: Period Labels Column + Day Columns
-            const periodLabelColumn = $('<div>').addClass('day-column period-labels');
-            for (let period = 1; period <= totalPeriods; period++) {
-                periodLabelColumn.append($('<div>').addClass('period-label').text(`Period ${period}`));
-            }
-            body.append(periodLabelColumn);
-
+            const plCol = $('<div>').addClass('day-column period-labels'); for (let p = 1; p <= totalPeriods; p++) plCol.append($('<div>').addClass('period-label').text(`Period ${p}`)); body.append(plCol);
             daysOfWeek.forEach(day => {
-                const dayColumn = $('<div>').addClass('day-column');
-                for (let period = 1; period <= totalPeriods; period++) {
-                    const slot = $('<div>').addClass('period-slot');
-                    slot.attr('data-day', day);
-                    slot.attr('data-period', period);
-
-                    // Find booking in the *entire* dataset for THIS week and slot
-                    const booking = allBookingData.find(b =>
-                        b.Week === currentWeek &&
-                        b.Day === day &&
-                        b.Period === period
-                    );
-
-                    if (booking) {
-                        slot.addClass('booked');
-                        slot.html(`
-                            <div class="booked-info">
-                                <strong>${booking.StaffName || 'N/A'}</strong>
-                                ${booking.Department || 'N/A'}
-                            </div>
-                        `);
-                    } else {
-                        slot.addClass('available');
-                        slot.html(`Available`);
-                    }
-                    dayColumn.append(slot);
-                }
-                body.append(dayColumn);
+                const dc = $('<div>').addClass('day-column');
+                for (let p = 1; p <= totalPeriods; p++) {
+                    const slot = $('<div>').addClass('period-slot').attr({'data-day': day, 'data-period': p});
+                    const bk = allBookingData.find(b => b.Week === currentWeek && b.Day === day && b.Period === p);
+                    if (bk) slot.addClass('booked').html(`<div class="booked-info"><strong>${bk.StaffName||'N/A'}</strong>${bk.Department||'N/A'}</div>`);
+                    else slot.addClass('available').html(`Available`); dc.append(slot);
+                } body.append(dc);
             });
-
-            grid.append(header);
-            grid.append(body);
-            container.append(grid); // Append the potentially wide grid into the scrollable container
+            grid.append(header); grid.append(body); container.append(grid);
         }
 
-
-        // Open booking form
+        // Open Booking Modal
         function openBookingForm(day, period) {
-             // Re-check if already booked using the latest data, just in case
-             const booking = allBookingData.find(b => b.Week === currentWeek && b.Day === day && b.Period == period); // Use == for period comparison just in case of type mismatch initially
-             if (booking) {
-                 showNotification('This slot appears to be booked. Refreshing data might be needed.', 'warning');
-                 // Optionally force a refresh: loadBookingData();
-                 return;
-             }
-
-            console.log(`Opening booking form for ${day}, period ${period}`);
-            selectedDay = day;
-            selectedPeriod = parseInt(period);
-
-            $('#selected-day').val(day);
-            $('#selected-period').val(period);
-            $('#booking-form-info').text(`${day} - Period ${period}`);
-
-            $('#staff-name').val('');
-            $('#department').val('');
-            $('#submit-booking').prop('disabled', false); // Ensure button is enabled
-
-            $('#booking-form').fadeIn(200);
-            $('#overlay').fadeIn(200);
+             const booking = allBookingData.find(b => b.Week === currentWeek && b.Day === day && b.Period == period);
+             if (booking) { showNotification('Slot already booked.', 'warning'); return; }
+             selectedDay = day; selectedPeriod = parseInt(period); const selectedDate = weekDateMap[day] || 'N/A';
+             $('#selected-day').val(day); $('#selected-period').val(period); $('#booking-form-info').text(`${day}, ${selectedDate} - Period ${period}`);
+             $('#class-booking-form')[0].reset(); $('#submit-booking').prop('disabled', false);
+             $('#booking-form, #overlay').fadeIn(200); $('#staff-name').focus();
         }
+        function closeBookingForm() { $('#booking-form, #overlay').fadeOut(200); }
 
-        // Close booking form
-        function closeBookingForm() {
-            $('#booking-form').fadeOut(200);
-            $('#overlay').fadeOut(200);
-            $('#class-booking-form')[0].reset();
-            $('#submit-booking').prop('disabled', false); // Re-enable button on close
-        }
-
-        // Handle booking form submission - POST to Google Apps Script
+        // Handle Booking Submission
         async function handleBookingSubmit(e) {
-            e.preventDefault();
-            console.log("Attempting to submit booking...");
-            showSpinner(); // Show general spinner
-             $('#submit-booking').prop('disabled', true); // Disable button to prevent double submission
-
-            const staffName = $('#staff-name').val().trim();
-            const department = $('#department').val();
-
-            if (!staffName || !department) {
-                showNotification('Please fill in all fields', 'error');
-                hideSpinner();
-                 $('#submit-booking').prop('disabled', false); // Re-enable button
-                return;
-            }
-
-            // Prepare data payload for GAS
-            const bookingPayload = {
-                week: currentWeek,
-                day: selectedDay,
-                period: selectedPeriod,
-                staffName: staffName,
-                department: department
-            };
-
-             console.log("Sending payload:", bookingPayload);
-
+            e.preventDefault(); showSpinner(); $('#submit-booking').prop('disabled', true);
+            const staffName = $('#staff-name').val().trim(), department = $('#department').val();
+            if (!staffName || !department) { showNotification('Please fill fields', 'error'); hideSpinner(); $('#submit-booking').prop('disabled', false); return; }
+            const payload = { action: 'bookClass', week: currentWeek, day: selectedDay, period: selectedPeriod, staffName, department };
             try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    // GAS doPost often expects data differently depending on setup.
-                    // Sending as JSON string in body is common.
-                    // Using redirect:'follow' is generally safe.
-                    // Omitting 'Content-Type' often works, but 'text/plain' is sometimes needed.
-                    // Let's try minimal headers first. If issues, add 'Content-Type': 'text/plain'.
-                     // mode: 'no-cors', // Use 'no-cors' IF you have issues and deployed as 'Anyone, anonymous'
-                    // headers: { // Optional: Explicitly set content type if needed
-                    //     'Content-Type': 'application/json', // OR 'text/plain'
-                    // },
-                     redirect: 'follow', // Necessary for GAS web apps
-                    body: JSON.stringify(bookingPayload)
-                });
-
-                 // Since redirect:'follow' is used, we expect the final response
-                 if (!response.ok) {
-                     // Attempt to parse error from response body
-                     let errorMsg = `Booking failed. Status: ${response.status}`;
-                     try {
-                         const errorData = await response.json();
-                         if(errorData && errorData.message) {
-                             errorMsg = `Booking failed: ${errorData.message}`;
-                         }
-                     } catch(parseError) { /* Ignore if not JSON */ }
-                     throw new Error(errorMsg);
-                 }
-
-                const result = await response.json();
-                console.log("Response from GAS:", result);
-
-                 // Check the structure of the success response more carefully
-                 if (result.status === 'success' && result.data && typeof result.data === 'object') {
-                    // Add the *confirmed* booking (with server timestamp) to our local data
-                    // Ensure types are correct from the response
-                    const confirmedBooking = {
-                         ...result.data,
-                         Week: parseInt(result.data.Week, 10),
-                         Period: parseInt(result.data.Period, 10),
-                         Timestamp: result.data.Timestamp // Should be ISO string
-                    };
-                    allBookingData.push(confirmedBooking);
-
-                    closeBookingForm();
-                    renderTimetable(); // Update the timetable display
-                    showNotification('Class booked successfully!', 'success');
-                } else {
-                     // Handle specific errors returned from the script (like "Slot already booked")
-                     // Or handle cases where result.data might be missing or malformed
-                     throw new Error(result.message || 'Booking failed or invalid response received.');
-                }
-
-            } catch (error) {
-                console.error('Error submitting booking:', error);
-                // Check if the error message indicates the slot is already booked
-                if (error.message && error.message.toLowerCase().includes('already booked')) {
-                    showNotification(`${error.message} Refreshing data...`, 'warning');
-                    // Force reload data after showing the message
-                     setTimeout(loadBookingData, 1500); // Give user time to see message
-                } else {
-                    showNotification(`Error: ${error.message}`, 'error');
-                }
-                // Don't reload data automatically for other errors, let user decide.
-            } finally {
-                hideSpinner();
-                // Re-enable button in the form, even on error, unless it's closed
-                if ($('#booking-form').is(':visible')) {
-                     $('#submit-booking').prop('disabled', false);
-                }
-            }
+                const resp = await fetch(SCRIPT_URL, { method: 'POST', redirect: 'follow', body: JSON.stringify(payload) });
+                if (!resp.ok) throw new Error(`Submit failed: ${resp.status}`);
+                const res = await resp.json(); if (res.status !== 'success' || !res.data) throw new Error(res.message || 'Submit error.');
+                allBookingData.push({...res.data, Week: parseInt(res.data.Week,10), Period: parseInt(res.data.Period,10)});
+                closeBookingForm(); renderTimetable(); showNotification('Booked!', 'success');
+            } catch (err) { console.error('Submit error:', err); if(err.message?.includes('already booked')) { showNotification(err.message+' Refreshing...', 'warning'); setTimeout(loadBookingData, 1500); } else showNotification(`Error: ${err.message}`, 'error'); }
+            finally { hideSpinner(); if ($('#booking-form').is(':visible')) $('#submit-booking').prop('disabled', false); }
         }
 
-
-        // Render booking history (FILTERED to last 7 days)
+        // Render History
         function renderBookingHistory() {
-            console.log("Rendering booking history (last 7 days)");
-            const historyContainer = $('#history-container');
-            historyContainer.empty(); // Clear previous content
-            showSpinner('history'); // Show spinner in history area
+             console.log("Rendering history..."); const cont = $('#history-container'); cont.empty(); showSpinner('history');
+             try {
+                 if (allBookingData.length === 0) { cont.html('<p>No data.</p>'); return; }
+                 const now = new Date(), sevenDaysAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6); sevenDaysAgo.setHours(0,0,0,0);
+                 const recent = allBookingData.filter(b => b.Timestamp && !isNaN(new Date(b.Timestamp)) && new Date(b.Timestamp) >= sevenDaysAgo)
+                                             .sort((a, b) => new Date(b.Timestamp) - new Date(a.Timestamp));
+                 if (recent.length === 0) { cont.html('<p>No recent bookings.</p>'); }
+                 else { recent.forEach(b => { let dateFmt = 'N/A'; try { let d = new Date(b.Timestamp); if(!isNaN(d)) dateFmt = d.toLocaleString(undefined, {dateStyle:'medium', timeStyle:'short'}); } catch(e){} cont.append($('<div>').addClass('history-card').html(`<h3>${b.Day||'N/A'} - P${b.Period||'N/A'} (W${b.Week||'N/A'})</h3><div class="history-details"><p><strong>Staff:</strong> ${b.StaffName||'N/A'}</p><p><strong>Dept:</strong> ${b.Department||'N/A'}</p><p><strong>Booked:</strong> ${dateFmt}</p></div>`)); }); }
+             } catch (err) { console.error("History render error:", err); cont.html('<p class=err>Error loading history.</p>'); }
+             finally { hideSpinner('history'); }
+        }
 
+        // ----- Admin Functions -----
+        function handleAdminLogin() {
+            const name = $('#admin-name').val().trim(), pin = $('#admin-pin').val(), err = $('#admin-auth-error');
+            if (name.toLowerCase() === ADMIN_NAME.toLowerCase() && pin === ADMIN_PIN) {
+                isAdminAuthenticated = true; $('#admin-auth').slideUp(); $('#admin-controls').slideDown(); err.hide();
+                $('#admin-current-week').text(`Week ${currentWeek}`); showNotification('Admin access granted', 'success');
+            } else {
+                isAdminAuthenticated = false; err.text('Invalid Name or PIN.').show(); $('#admin-name').val(''); $('#admin-pin').val(''); $('#admin-name').focus();
+                showNotification('Admin login failed', 'error'); $('#admin-auth').addClass('shake-effect'); setTimeout(() => $('#admin-auth').removeClass('shake-effect'), 500);
+            }
+        }
+        async function handleRemoveBooking() {
+            if (!isAdminAuthenticated) { showNotification('Admin auth required.', 'error'); return; }
+            const day = $('#admin-remove-day').val(), period = parseInt($('#admin-remove-period').val());
+            if (!day || isNaN(period) || period < 1 || period > totalPeriods) { showNotification('Invalid day/period.', 'error'); return; }
+            if (!confirm(`Remove ${day} P${period} W${currentWeek}?`)) return; showSpinner();
+            const payload = { action: 'removeBooking', week: currentWeek, day, period };
             try {
-                const now = new Date();
-                const sevenDaysAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7); // Date 7 days ago (start of the day)
-                sevenDaysAgo.setHours(0, 0, 0, 0); // Ensure it's the beginning of the day
-
-                // Filter allBookingData for items within the last 7 days
-                const recentBookings = allBookingData.filter(booking => {
-                    if (!booking.Timestamp) {
-                         //console.warn("Booking missing timestamp:", booking);
-                         return false; // Skip items without a timestamp
-                     }
-                    try {
-                        const bookingDate = new Date(booking.Timestamp);
-                         // Check if the date is valid *and* within the range
-                        return !isNaN(bookingDate) && bookingDate >= sevenDaysAgo && bookingDate <= now;
-                    } catch (e) {
-                        console.warn("Invalid date format encountered in history:", booking.Timestamp);
-                        return false;
-                    }
-                });
-
-                // Sort the filtered bookings by timestamp (newest first)
-                recentBookings.sort((a, b) => {
-                     // Handle potential missing or invalid timestamps during sort
-                    const dateA = a.Timestamp ? new Date(a.Timestamp) : null;
-                    const dateB = b.Timestamp ? new Date(b.Timestamp) : null;
-
-                    if (!dateA && !dateB) return 0; // Both invalid/missing
-                    if (!dateA) return 1;  // Sort invalid A after valid B
-                    if (!dateB) return -1; // Sort invalid B after valid A
-                    if (isNaN(dateA) && isNaN(dateB)) return 0; // Both invalid dates
-                    if (isNaN(dateA)) return 1; // Sort invalid A after valid B
-                    if (isNaN(dateB)) return -1; // Sort invalid B after valid A
-
-                    return dateB - dateA; // Descending order (newest first)
-                });
-
-                console.log("Filtered recent bookings:", recentBookings);
-
-                if (recentBookings.length === 0) {
-                    historyContainer.html('<p>No booking history found for the last 7 days.</p>');
-                } else {
-                    recentBookings.forEach(booking => {
-                        const historyCard = $('<div>').addClass('history-card');
-                        let formattedDate = 'N/A';
-                        if (booking.Timestamp) {
-                             try {
-                                const date = new Date(booking.Timestamp);
-                                if (!isNaN(date)) { // Check if date is valid
-                                     formattedDate = date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
-                                }
-                            } catch (e) { console.error("Error formatting date:", e); }
-                        }
-
-                        historyCard.html(`
-                            <h3>${booking.Day || 'N/A'} - Period ${booking.Period || 'N/A'} (Week ${booking.Week || 'N/A'})</h3>
-                            <div class="history-details">
-                                <p><strong>Staff:</strong> ${booking.StaffName || 'N/A'}</p>
-                                <p><strong>Department:</strong> ${booking.Department || 'N/A'}</p>
-                                <p><strong>Booked on:</strong> ${formattedDate}</p>
-                            </div>
-                        `);
-                        historyContainer.append(historyCard);
-                    });
-                }
-            } catch (error) {
-                 console.error("Error rendering history:", error);
-                 historyContainer.html('<p style="color: red;">Error loading history.</p>');
-            } finally {
-                 hideSpinner('history');
-            }
-
+                const r = await fetch(SCRIPT_URL, { method: 'POST', redirect: 'follow', body: JSON.stringify(payload) }); if (!r.ok) throw new Error(`Err ${r.status}`);
+                const res = await r.json(); if (res.status !== 'success') throw new Error(res.message || 'Failed remove.');
+                showNotification(res.message || 'Removed!', 'success'); $('#admin-remove-day').val(''); $('#admin-remove-period').val(''); await loadBookingData();
+            } catch (err) { console.error('Remove err:', err); showNotification(`Error: ${err.message}`, 'error'); } finally { hideSpinner(); }
+        }
+        async function handleClearTimetable() {
+             if (!isAdminAuthenticated) { showNotification('Admin auth required.', 'error'); return; }
+             if (!confirm(`!! WARNING !!\nClear ALL bookings for Week ${currentWeek}?`)) return; showSpinner();
+             const payload = { action: 'clearTimetable', week: currentWeek };
+             try {
+                 const r = await fetch(SCRIPT_URL, { method: 'POST', redirect: 'follow', body: JSON.stringify(payload) }); if (!r.ok) throw new Error(`Err ${r.status}`);
+                 const res = await r.json(); if (res.status !== 'success') throw new Error(res.message || 'Failed clear.');
+                 showNotification(res.message || `W${currentWeek} cleared!`, 'success'); await loadBookingData();
+             } catch (err) { console.error('Clear err:', err); showNotification(`Error: ${err.message}`, 'error'); } finally { hideSpinner(); }
+        }
+        async function handleDownloadHistory() {
+             if (!isAdminAuthenticated) { showNotification('Admin auth required.', 'error'); return; }
+             console.log("Download req..."); showSpinner(); const btn = $('#admin-download-history-btn'); btn.prop('disabled', true);
+             try {
+                 const url = `${SCRIPT_URL}?action=download`; const resp = await fetch(url);
+                 if (!resp.ok) { let txt=`Dl fail ${resp.status}`; try {txt=await resp.text();}catch(e){} throw new Error(txt); }
+                 const disp = resp.headers.get('content-disposition'); let fname = 'booking_history.csv';
+                 if (disp && disp.includes('attachment')) { const m = disp.match(/filename="?([^"]+)"?/); if (m && m[1]) fname = m[1]; }
+                 const blob = await resp.blob(); const link = document.createElement("a");
+                 if (link.download !== undefined) { const objUrl = URL.createObjectURL(blob); link.href = objUrl; link.download = fname; link.style.visibility='hidden'; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(objUrl); showNotification('Download started.', 'success'); }
+                 else { showNotification('Download not supported.', 'warning'); }
+             } catch (err) { console.error('Download err:', err); showNotification(`Dl Error: ${err.message}`, 'error'); }
+             finally { hideSpinner(); btn.prop('disabled', false); }
         }
 
-
-        // --- Utility Functions (Spinners, Notifications) ---
-        function showNotification(message, type) {
-            const notification = $('#notification');
-            notification.text(message);
-            notification.removeClass('success error warning'); // Clear previous types
-            notification.addClass(type); // Add current type
-
-             // Force reflow to restart animation if notification is already shown
-             notification.removeClass('show');
-             void notification.offsetWidth; // Trigger reflow
-
-            notification.addClass('show');
-
-             // Auto-hide after a delay
-            // Clear any existing timer before setting a new one
-             if (notification.data('hideTimeout')) {
-                 clearTimeout(notification.data('hideTimeout'));
-             }
-            const timeoutId = setTimeout(() => {
-                notification.removeClass('show');
-                 notification.removeData('hideTimeout'); // Clean up data attribute
-            }, 3500);
-             notification.data('hideTimeout', timeoutId); // Store timer ID
-        }
-
-        // Modified spinner functions to handle specific areas or general overlay
-        function showSpinner(area = null) {
-            if (area === 'timetable') {
-                 $('#timetable-spinner').show();
-            } else if (area === 'history') {
-                 $('#history-spinner').show();
-            }
-            else {
-                $('#spinner').show(); // Show general overlay spinner
-                 $('#overlay').fadeIn(100); // Show overlay with spinner
-            }
-        }
-
-        function hideSpinner(area = null) {
-             if (area === 'timetable') {
-                 $('#timetable-spinner').hide();
-            } else if (area === 'history') {
-                 $('#history-spinner').hide();
-            }
-             else {
-                $('#spinner').hide(); // Hide general overlay spinner
-                 // Only hide overlay if no other spinners are potentially active (simplistic check)
-                 if (!$('#timetable-spinner').is(':visible') && !$('#history-spinner').is(':visible')) {
-                    $('#overlay').fadeOut(100);
-                 }
-            }
-        }
-        // --- End Utility Functions ---
+        // --- Utility Functions ---
+        function showNotification(message, type) { const n = $('#notification'); n.text(message); n.removeClass('success error warning').addClass(type); n.removeClass('show'); void n[0].offsetWidth; n.addClass('show'); if (n.data('hideTimeout')) clearTimeout(n.data('hideTimeout')); const tid = setTimeout(() => { n.removeClass('show'); n.removeData('hideTimeout'); }, 3500); n.data('hideTimeout', tid); }
+        function showSpinner(area = null) { if (area === 'timetable') $('#timetable-spinner').show(); else if (area === 'history') $('#history-spinner').show(); else { $('#spinner').show(); $('#overlay').fadeIn(100); } }
+        function hideSpinner(area = null) { if (area === 'timetable') $('#timetable-spinner').hide(); else if (area === 'history') $('#history-spinner').hide(); else { $('#spinner').hide(); if (!$('#booking-form').is(':visible') && !$('#timetable-spinner').is(':visible') && !$('#history-spinner').is(':visible') ) $('#overlay').fadeOut(100); } }
 
     </script>
+
 </body>
 </html>
